@@ -12,10 +12,13 @@ class App extends StatelessWidget {
       title: 'Time Tracker',
       theme: ThemeData(
         scaffoldBackgroundColor: AppColors.background,
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: AppColors.primary,
+        ),
         appBarTheme: const AppBarTheme(
           backgroundColor: AppColors.background,
-          centerTitle: false,
           elevation: 0,
+          centerTitle: false,
         ),
         primaryColor: Colors.blue,
         fontFamily: 'Roboto',

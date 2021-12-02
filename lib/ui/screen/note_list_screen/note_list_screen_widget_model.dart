@@ -42,8 +42,7 @@ class NoteListScreenWidgetModel
     super.initWidgetModel();
 
     _loadNoteList();
-    _noteNameStyle =
-        _themeWrapper.getTextTheme(context).headline4 ?? AppTypography.title3;
+    _noteNameStyle = AppTypography.cardTitle;
   }
 
   @override
@@ -69,6 +68,11 @@ class NoteListScreenWidgetModel
       _noteListState.error(e, previousData);
     }
   }
+
+  @override
+  void addNote() {
+    throw Exception('Метод добавления не реализован');
+  }
 }
 
 /// Interface of [NoteListScreenWidgetModel]
@@ -76,4 +80,6 @@ abstract class INoteListWidgetModel extends IWidgetModel {
   ListenableState<EntityState<Iterable<Note>>> get noteListState;
 
   TextStyle get noteNameStyle;
+
+  void addNote();
 }

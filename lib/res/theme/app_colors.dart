@@ -4,9 +4,12 @@ import 'package:flutter/widgets.dart';
 class AppColors {
   static const Color background = Color(0xffF8F6E8);
   static const Color screenTitle = Color(0xff5A464B);
+  static const Color cardTitle = Color(0xff1E1E1E);
 
   static const Color white = Color(0xFFFFFFFF);
   static const Color black = Color(0xFF000000);
+
+  static const Color primary = Color(0xff5F454B);
 
   static const Color primaryGreen1 = Color(0xFF21905B);
   static const Color primaryGreen2 = Color(0xFF33B063);
@@ -68,7 +71,7 @@ class AppColors {
   static const Color bgGreen = Color(0xFFE6FEF2);
 
   /// Shadow color
-  static const Color shadowColor = Color(0xFF727986);
+  static const Color shadowColor = Color(0x20E2CDA9);
 
   /// BG
   static const Iterable<Color> bgValues = [

@@ -9,6 +9,13 @@ class AppTypography {
     fontWeight: FontWeight.bold,
   );
 
+  static const cardTitle = TextStyle(
+    color: AppColors.cardTitle,
+    fontWeight: FontWeight.bold,
+    fontSize: 16,
+    overflow: TextOverflow.ellipsis,
+  );
+
   static const largeTitle = TextStyle(
     color: AppColors.typographyPrimary,
     fontWeight: FontWeight.w700,
