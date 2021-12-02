@@ -1,3 +1,3 @@
 # Time Tracker
 
-Example of using Elementary library for development app.
+At this time it's just my first onboarding test app.
