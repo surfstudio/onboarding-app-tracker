@@ -16,6 +16,18 @@ class AppTypography {
     overflow: TextOverflow.ellipsis,
   );
 
+  static const cardStatus = TextStyle(
+    color: AppColors.white,
+    fontSize: 14,
+    overflow: TextOverflow.ellipsis,
+  );
+
+  static const cardStatusInProgress = TextStyle(
+    color: AppColors.cardStatus,
+    fontSize: 14,
+    overflow: TextOverflow.ellipsis,
+  );
+
   static const largeTitle = TextStyle(
     color: AppColors.typographyPrimary,
     fontWeight: FontWeight.w700,

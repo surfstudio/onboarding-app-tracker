@@ -23,7 +23,7 @@ class NoteList extends StatelessWidget {
 
     return ListView.separated(
       itemBuilder: (_, index) => NoteWidget(
-        data: notes.elementAt(index),
+        note: notes.elementAt(index),
         noteNameStyle: nameStyle,
       ),
       separatorBuilder: (_, __) => const SizedBox(height: 8),

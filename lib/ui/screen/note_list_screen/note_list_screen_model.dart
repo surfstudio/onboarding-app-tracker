@@ -13,9 +13,9 @@ class NoteListScreenModel extends ElementaryModel {
   ) : super(errorHandler: errorHandler);
 
   /// Return iterable notes.
-  Future<Iterable<Note>> loadCountries() async {
+  Future<Iterable<Note>> loadNotes() async {
     try {
-      final res = await _noteRepository.getAllCountries();
+      final res = await _noteRepository.getAllNotes();
       return res;
     } on Exception catch (e) {
       handleError(e);

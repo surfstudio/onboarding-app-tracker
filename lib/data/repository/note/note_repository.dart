@@ -9,7 +9,8 @@ class NoteRepository {
   NoteRepository(this._client);
 
   /// Return all notes
-  Future<Iterable<Note>> getAllCountries() => _client.getAll().then(
-        (value) => value.map(mapNote),
-      );
+  Future<Iterable<Note>> getAllNotes() async {
+    final noteDataList = await _client.getAll();
+    return mapNoteDataListToNoteList(noteDataList);
+  }
 }

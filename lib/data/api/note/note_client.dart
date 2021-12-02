@@ -28,6 +28,10 @@ class NoteClient {
         title: 'Прогаю',
         dateTime: DateTime(2021, 12, 2, 14),
       ),
+      NoteData(
+        title: 'Списываю время',
+        dateTime: DateTime(2021, 12, 2, 18, 15),
+      ),
     ];
   }
 }

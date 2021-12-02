@@ -62,7 +62,7 @@ class NoteListScreenWidgetModel
     _noteListState.loading(previousData);
 
     try {
-      final res = await model.loadCountries();
+      final res = await model.loadNotes();
       _noteListState.content(res);
     } on Exception catch (e) {
       _noteListState.error(e, previousData);
