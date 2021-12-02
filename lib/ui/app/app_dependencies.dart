@@ -1,5 +1,11 @@
-import 'package:country/app.dart';
+import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:time_tracker/data/api/note/note_client.dart';
+import 'package:time_tracker/data/repository/note/note_repository.dart';
+import 'package:time_tracker/ui/app/app.dart';
+import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen_model.dart';
+import 'package:time_tracker/utils/error/default_error_handler.dart';
 
 /// Widget with dependencies that live all runtime.
 class AppDependencies extends StatefulWidget {
@@ -14,9 +20,9 @@ class AppDependencies extends StatefulWidget {
 class _AppDependenciesState extends State<AppDependencies> {
   late final Dio _http;
   late final DefaultErrorHandler _defaultErrorHandler;
-  late final CountryClient _countryClient;
-  late final CountryRepository _countryRepository;
-  late final CountryListScreenModel _countryListScreenModel;
+  late final NoteClient _noteClient;
+  late final NoteRepository _noteRepository;
+  late final NoteListScreenModel _noteListScreenModel;
 
   late final ThemeWrapper _themeWrapper;
 
@@ -26,13 +32,13 @@ class _AppDependenciesState extends State<AppDependencies> {
 
     _http = Dio();
     _defaultErrorHandler = DefaultErrorHandler();
-    _countryClient = CountryClient(_http);
-    _countryRepository = CountryRepository(_countryClient);
+    _noteClient = NoteClient(_http);
+    _noteRepository = NoteRepository(_noteClient);
     // Uncomment to use mock instead real backend
-    // _countryRepository = MockCountryRepository();
+    // _noteRepository = MockNoteRepository();
 
-    _countryListScreenModel = CountryListScreenModel(
-      _countryRepository,
+    _noteListScreenModel = NoteListScreenModel(
+      _noteRepository,
       _defaultErrorHandler,
     );
 
@@ -43,8 +49,8 @@ class _AppDependenciesState extends State<AppDependencies> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        Provider<CountryListScreenModel>(
-          create: (_) => _countryListScreenModel,
+        Provider<NoteListScreenModel>(
+          create: (_) => _noteListScreenModel,
         ),
         Provider<ThemeWrapper>(
           create: (_) => _themeWrapper,
