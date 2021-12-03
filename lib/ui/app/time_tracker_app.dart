@@ -11,6 +11,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'Time Tracker',
       theme: ThemeData(
+
         scaffoldBackgroundColor: AppColors.background,
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
           backgroundColor: AppColors.primary,
@@ -23,7 +24,7 @@ class App extends StatelessWidget {
         primaryColor: Colors.blue,
         fontFamily: 'Roboto',
       ),
-      darkTheme: ThemeData.dark(),
+      darkTheme: ThemeData(),
       home: const NoteListScreen(),
     );
   }

@@ -1,9 +1,8 @@
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:time_tracker/data/api/note/note_client.dart';
-import 'package:time_tracker/data/repository/note/note_repository.dart';
-import 'package:time_tracker/ui/app/app.dart';
+import 'package:time_tracker/data/note_repository.dart';
+import 'package:time_tracker/ui/app/time_tracker_app.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen_model.dart';
 import 'package:time_tracker/utils/error/default_error_handler.dart';
 
@@ -18,10 +17,8 @@ class AppDependencies extends StatefulWidget {
 }
 
 class _AppDependenciesState extends State<AppDependencies> {
-  late final Dio _http;
   late final DefaultErrorHandler _defaultErrorHandler;
-  late final NoteClient _noteClient;
-  late final NoteRepository _noteRepository;
+  late final MockNoteRepository _noteRepository;
   late final NoteListScreenModel _noteListScreenModel;
 
   late final ThemeWrapper _themeWrapper;
@@ -30,12 +27,8 @@ class _AppDependenciesState extends State<AppDependencies> {
   void initState() {
     super.initState();
 
-    _http = Dio();
     _defaultErrorHandler = DefaultErrorHandler();
-    _noteClient = NoteClient(_http);
-    _noteRepository = NoteRepository(_noteClient);
-    // Uncomment to use mock instead real backend
-    // _noteRepository = MockNoteRepository();
+    _noteRepository = MockNoteRepository();
 
     _noteListScreenModel = NoteListScreenModel(
       _noteRepository,
@@ -60,5 +53,3 @@ class _AppDependenciesState extends State<AppDependencies> {
     );
   }
 }
-
-class Dio {}

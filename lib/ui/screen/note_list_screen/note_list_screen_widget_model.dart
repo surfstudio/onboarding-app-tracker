@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -48,13 +47,13 @@ class NoteListScreenWidgetModel
   @override
   void onErrorHandle(Object error) {
     super.onErrorHandle(error);
-
-    if (error is DioError &&
-        (error.type == DioErrorType.connectTimeout ||
-            error.type == DioErrorType.receiveTimeout)) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Connection troubles')));
-    }
+    // TODO(Zemcov): добавь обработку
+    // if (error is DioError &&
+    //     (error.type == DioErrorType.connectTimeout ||
+    //         error.type == DioErrorType.receiveTimeout)) {
+    //   ScaffoldMessenger.of(context)
+    //       .showSnackBar(const SnackBar(content: Text('Connection troubles')));
+    // }
   }
 
   Future<void> _loadNoteList() async {
