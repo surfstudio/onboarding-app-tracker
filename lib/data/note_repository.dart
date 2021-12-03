@@ -18,7 +18,7 @@ class TempLocalNoteRepository implements INoteRepository {
   @override
   Future<List<Note>> addNote(Note newNote) async {
     await _addDuration();
-    throw Exception('No');
+    throw Exception('Иммитация ошибки на сервере');
     return _data..add(newNote);
   }
 

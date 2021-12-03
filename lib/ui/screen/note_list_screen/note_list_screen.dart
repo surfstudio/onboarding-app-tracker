@@ -17,7 +17,7 @@ class NoteListScreen extends ElementaryWidget<INoteListWidgetModel> {
   @override
   Widget build(INoteListWidgetModel wm) {
     return Scaffold(
-      // TODO(Zemcov): переделать на сливер
+      // TODO(Zemcov): переделать на сливер (хочу сливер апп бар)
       appBar: AppBar(
         title: const Text(
           'Work log',

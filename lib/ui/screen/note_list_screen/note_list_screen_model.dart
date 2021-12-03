@@ -13,7 +13,7 @@ class NoteListScreenModel extends ElementaryModel implements INoteRepository {
     ErrorHandler errorHandler,
   ) : super(errorHandler: errorHandler);
 
-  // TODO(Zemcov): Спроси почему Iterable а не List
+  // TODO(Zemcov): Спроси почему Iterable а не List (изменил всё на лист)
   @override
   Future<List<Note>> loadAllNotes() async {
     try {

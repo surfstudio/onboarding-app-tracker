@@ -40,7 +40,7 @@ class NoteListScreenWidgetModel
   @override
   void onErrorHandle(Object error) {
     super.onErrorHandle(error);
-    // TODO(Zemcov): добавь обработку
+    // TODO(Zemcov): добавь обработку ошибок
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(error.toString())));
     // }
@@ -63,7 +63,7 @@ class NoteListScreenWidgetModel
     try {
       final resultList = await model.addNote(newNote);
       _noteListState.content(resultList);
-    } on Exception catch (error) {
+    } on Exception catch (_) {
       _noteListState.content(previousData ?? []);
     }
   }
