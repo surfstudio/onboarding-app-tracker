@@ -1,13 +1,58 @@
+import 'package:time_tracker/data/i_note_repository.dart';
 import 'package:time_tracker/domain/note.dart';
 
-/// Note repository
-class MockNoteRepository {
-// TODO(Zemcov): Прокинь в репузиторий firebace клиент
-  MockNoteRepository();
+class TempLocalNoteRepository implements INoteRepository {
+  final _data = <Note>[];
 
-  /// Return all notes
-  Future<Iterable<Note>> getAllNotes() async {
+  TempLocalNoteRepository() {
+    _data.addAll(_mockData);
+  }
+
+  @override
+  Future<List<Note>> loadAllNotes() async {
+    await _addDuration();
+
     return _mockData;
+  }
+
+  @override
+  Future<List<Note>> addNote(Note newNote) async {
+    await _addDuration();
+    throw Exception('No');
+    return _data..add(newNote);
+  }
+
+  @override
+  Future<List<Note>> deleteNote(String noteId) async {
+    await _addDuration();
+    _checkElementInList(noteId);
+    return _data..removeWhere((note) => note.id == noteId);
+  }
+
+  @override
+  Future<List<Note>> editNote({
+    required String noteId,
+    required Note newNoteData,
+  }) async {
+    await _addDuration();
+    _checkElementInList(noteId);
+    _data[_getIndexById(noteId)] = newNoteData;
+    return _data;
+  }
+
+  int _getIndexById(String noteId) {
+    return _data.indexWhere((note) => note.id == noteId);
+  }
+
+  void _checkElementInList(String noteId) {
+    if (!_data.any((note) => note.id == noteId)) {
+      throw Exception('Element not found');
+    }
+  }
+
+  /// For the network behavior imitation
+  Future<void> _addDuration() async {
+    await Future<void>.delayed(const Duration(seconds: 1));
   }
 }
 
@@ -16,25 +61,30 @@ final List<Note> _mockData = [
     title: 'Созвон',
     startDateTime: DateTime(2021, 12, 2, 9),
     endDateTime: DateTime(2021, 12, 2, 10),
+    id: '0',
   ),
   Note(
     title: 'Прогаю',
     startDateTime: DateTime(2021, 12, 2, 10),
     endDateTime: DateTime(2021, 12, 2, 13),
+    id: '1',
   ),
   Note(
     title: 'Обед',
     startDateTime: DateTime(2021, 12, 2, 13),
     endDateTime: DateTime(2021, 12, 2, 14),
+    id: '2',
   ),
   Note(
     title: 'Прогаю',
     startDateTime: DateTime(2021, 12, 2, 14),
     endDateTime: DateTime(2021, 12, 2, 18, 15),
+    id: '3',
   ),
   Note(
     title: 'Списываю время',
     startDateTime: DateTime(2021, 12, 2, 18, 15),
     endDateTime: null,
+    id: '4',
   ),
 ];

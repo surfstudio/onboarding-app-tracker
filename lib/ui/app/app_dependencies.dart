@@ -18,7 +18,7 @@ class AppDependencies extends StatefulWidget {
 
 class _AppDependenciesState extends State<AppDependencies> {
   late final DefaultErrorHandler _defaultErrorHandler;
-  late final MockNoteRepository _noteRepository;
+  late final TempLocalNoteRepository _noteRepository;
   late final NoteListScreenModel _noteListScreenModel;
 
   late final ThemeWrapper _themeWrapper;
@@ -28,7 +28,8 @@ class _AppDependenciesState extends State<AppDependencies> {
     super.initState();
 
     _defaultErrorHandler = DefaultErrorHandler();
-    _noteRepository = MockNoteRepository();
+    // TODO(Zemcov): Замени на файрбэйс
+    _noteRepository = TempLocalNoteRepository();
 
     _noteListScreenModel = NoteListScreenModel(
       _noteRepository,

@@ -7,12 +7,10 @@ import 'package:time_tracker/res/theme/app_typography.dart';
 
 class NoteWidget extends StatelessWidget {
   final Note note;
-  final TextStyle noteNameStyle;
 
   const NoteWidget({
-    Key? key,
     required this.note,
-    required this.noteNameStyle,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -31,7 +29,7 @@ class NoteWidget extends StatelessWidget {
           children: [
             Text(
               note.title,
-              style: noteNameStyle,
+              style: AppTypography.cardTitle,
             ),
             const SizedBox(height: 5),
             if (note.eventDuration != null)

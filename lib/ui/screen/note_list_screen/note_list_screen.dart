@@ -17,19 +17,19 @@ class NoteListScreen extends ElementaryWidget<INoteListWidgetModel> {
   @override
   Widget build(INoteListWidgetModel wm) {
     return Scaffold(
+      // TODO(Zemcov): переделать на сливер
       appBar: AppBar(
         title: const Text(
           'Work log',
           style: AppTypography.screenTitle,
         ),
       ),
-      body: EntityStateNotifierBuilder<Iterable<Note>>(
+      body: EntityStateNotifierBuilder<List<Note>>(
         listenableEntityState: wm.noteListState,
         loadingBuilder: (_, __) => const LoadingWidget(),
         errorBuilder: (_, __, ___) => const LoadingErrorWidget(),
         builder: (_, notes) => NoteList(
           notes: notes,
-          nameStyle: wm.noteNameStyle,
         ),
       ),
       floatingActionButton: FloatingActionButton(
