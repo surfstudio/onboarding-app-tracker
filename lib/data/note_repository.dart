@@ -1,4 +1,4 @@
-import 'package:time_tracker/domain/note/note.dart';
+import 'package:time_tracker/domain/note.dart';
 
 /// Note repository
 class MockNoteRepository {

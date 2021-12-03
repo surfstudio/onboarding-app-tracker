@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:time_tracker/domain/note/note.dart';
+import 'package:time_tracker/domain/note.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/components/error_widget.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/components/note_widget.dart';
 
