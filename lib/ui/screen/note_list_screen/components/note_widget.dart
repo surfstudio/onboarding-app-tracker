@@ -21,7 +21,7 @@ class NoteWidget extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(15)),
       ),
-      margin: AppEdgeInsets.top10hor20,
+      margin: AppEdgeInsets.t10h20,
       child: Padding(
         padding: AppEdgeInsets.all20,
         child: Column(
@@ -34,7 +34,7 @@ class NoteWidget extends StatelessWidget {
             const SizedBox(height: 5),
             if (note.eventDuration != null)
               Container(
-                padding: AppEdgeInsets.ver2hor10,
+                padding: AppEdgeInsets.v2h10,
                 decoration:
                     AppDecoration.note.copyWith(color: note.statusColor),
                 child: Text(

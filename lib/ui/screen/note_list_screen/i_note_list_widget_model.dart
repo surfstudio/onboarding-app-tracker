@@ -4,5 +4,7 @@ part of 'note_list_screen_widget_model.dart';
 abstract class INoteListWidgetModel extends IWidgetModel {
   ListenableState<EntityState<List<Note>>> get noteListState;
 
-  void addNote();
+  void addNoteWithDialogAndUpdateLastNote();
+
+  void deleteNote(int index);
 }

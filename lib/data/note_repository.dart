@@ -11,20 +11,19 @@ class TempLocalNoteRepository implements INoteRepository {
   @override
   Future<List<Note>> loadAllNotes() async {
     await _addDuration();
-
-    return _mockData;
+    return _data;
   }
 
   @override
   Future<List<Note>> addNote(Note newNote) async {
     await _addDuration();
-    throw Exception('Иммитация ошибки на сервере');
     return _data..add(newNote);
   }
 
   @override
   Future<List<Note>> deleteNote(String noteId) async {
     await _addDuration();
+    _addException(howOften: 2);
     _checkElementInList(noteId);
     return _data..removeWhere((note) => note.id == noteId);
   }
@@ -53,6 +52,15 @@ class TempLocalNoteRepository implements INoteRepository {
   /// For the network behavior imitation
   Future<void> _addDuration() async {
     await Future<void>.delayed(const Duration(seconds: 1));
+  }
+
+  // TODO(Zemcov): Переменная для тестирования ошибки. Удали когда наиграешься
+  int DELETE_IT_Index = 0;
+  void _addException({int howOften = 1}) {
+    DELETE_IT_Index++;
+    if (DELETE_IT_Index % howOften == 0) {
+      throw Exception('Иммитация ошибки сервера');
+    }
   }
 }
 
@@ -84,7 +92,6 @@ final List<Note> _mockData = [
   Note(
     title: 'Списываю время',
     startDateTime: DateTime(2021, 12, 2, 18, 15),
-    endDateTime: null,
     id: '4',
   ),
 ];
