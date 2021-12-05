@@ -7,10 +7,11 @@ import 'package:time_tracker/res/theme/app_typography.dart';
 
 class NoteWidget extends StatelessWidget {
   final Note note;
-
+  final EdgeInsets margin;
   const NoteWidget({
     required this.note,
     Key? key,
+    this.margin = AppEdgeInsets.h20,
   }) : super(key: key);
 
   @override
@@ -21,8 +22,9 @@ class NoteWidget extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(15)),
       ),
-      margin: AppEdgeInsets.t10h20,
-      child: Padding(
+      margin: margin,
+      child: Container(
+        width: double.infinity,
         padding: AppEdgeInsets.all20,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,14 +33,16 @@ class NoteWidget extends StatelessWidget {
               note.title,
               style: AppTypography.cardTitle,
             ),
-            const SizedBox(height: 5),
-            if (note.eventDuration != null)
+            const SizedBox(
+              height: 5,
+            ),
+            if (note.noteDuration != null)
               Container(
                 padding: AppEdgeInsets.v2h10,
-                decoration:
-                    AppDecoration.note.copyWith(color: note.statusColor),
+                decoration: AppDecoration.note
+                    .copyWith(color: note.noteDuration!.color),
                 child: Text(
-                  note.eventDuration!,
+                  note.noteDuration!.title,
                   style: AppTypography.cardStatus,
                 ),
               )

@@ -142,12 +142,12 @@ packages:
     source: hosted
     version: "1.0.4"
   dart_code_metrics:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: dart_code_metrics
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.8.0"
+    version: "4.8.1"
   dart_style:
     dependency: transitive
     description:

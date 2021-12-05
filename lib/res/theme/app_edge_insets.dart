@@ -16,4 +16,7 @@ class AppEdgeInsets {
     right: 20,
     bottom: 10,
   );
+  static const EdgeInsets h20 = EdgeInsets.symmetric(horizontal: 20);
+
+  static const EdgeInsets zero = EdgeInsets.zero;
 }

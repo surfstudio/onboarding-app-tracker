@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:time_tracker/res/theme/app_colors.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen.dart';
 
+GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
+
 /// App main widget.
 class App extends StatelessWidget {
   const App({Key? key}) : super(key: key);
@@ -9,6 +12,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      scaffoldMessengerKey: scaffoldMessengerKey,
       title: 'Time Tracker',
       theme: ThemeData(
         scaffoldBackgroundColor: AppColors.background,
