@@ -8,7 +8,7 @@ class TempLocalNoteRepository implements INoteRepository {
       _NetworkBehaviourImitation();
 
   TempLocalNoteRepository() {
-    _data.addAll(_networkImitation.mockData);
+    _data.addAll(_networkImitation._mockData);
   }
 
   @override
@@ -56,29 +56,7 @@ class TempLocalNoteRepository implements INoteRepository {
 
 /// Класс используется для отлидки
 class _NetworkBehaviourImitation {
-  int requestCount = 0;
-
-  void addException({
-    int howOften = 1,
-    String? message,
-  }) {
-    requestCount++;
-    if (requestCount % howOften == 0) {
-      throw Exception(
-        message ??
-            'Имитация ошибки сервера: '
-                'ошибка воспроизводится каждый $howOften запрос',
-      );
-    }
-  }
-
-  Future<void> addDuration({
-    Duration duration = const Duration(seconds: 1),
-  }) async {
-    await Future<void>.delayed(duration);
-  }
-
-  final List<Note> mockData = [
+  final List<Note> _mockData = [
     Note(
       title: 'Созвон',
       startDateTime: DateTime(2021, 12, 2, 9),
@@ -109,4 +87,26 @@ class _NetworkBehaviourImitation {
       id: '4',
     ),
   ];
+
+  int requestCount = 0;
+
+  void addException({
+    int howOften = 1,
+    String? message,
+  }) {
+    requestCount++;
+    if (requestCount % howOften == 0) {
+      throw Exception(
+        message ??
+            'Имитация ошибки сервера: '
+                'ошибка воспроизводится каждый $howOften запрос',
+      );
+    }
+  }
+
+  Future<void> addDuration({
+    Duration duration = const Duration(seconds: 1),
+  }) async {
+    await Future<void>.delayed(duration);
+  }
 }

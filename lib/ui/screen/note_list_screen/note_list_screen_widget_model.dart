@@ -73,7 +73,7 @@ class NoteListScreenWidgetModel
       return;
     }
     try {
-      final resultList = await model.deleteNote(deletingNote.id);
+      await model.deleteNote(deletingNote.id);
       // TODO(Question): Отрабатывает криво если удалять сразу несколько заметок
       // _noteListState.content(resultList);
     } catch (_) {

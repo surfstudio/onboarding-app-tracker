@@ -35,8 +35,8 @@ class Note {
     return <String, dynamic>{
       'id': id,
       'title': title,
-      'startDateTime': startDateTime,
-      'endDateTime': endDateTime,
+      'startDateTime': startDateTime.millisecondsSinceEpoch,
+      'endDateTime': endDateTime?.millisecondsSinceEpoch,
     };
   }
 }
