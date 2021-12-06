@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:time_tracker/domain/note.dart';
 import 'package:time_tracker/res/theme/app_edge_insets.dart';
-import 'package:time_tracker/ui/app/app.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen_model.dart';
+import 'package:time_tracker/utils/snack_bars.dart';
 import 'package:uuid/uuid.dart';
 
 part 'i_note_list_widget_model.dart';
@@ -17,15 +17,14 @@ NoteListScreenWidgetModel noteListScreenWidgetModelFactory(
   BuildContext context,
 ) {
   final model = context.read<NoteListScreenModel>();
-  final theme = context.read<ThemeWrapper>();
-  return NoteListScreenWidgetModel(model, theme);
+  return NoteListScreenWidgetModel(model);
 }
 
 /// Widget Model for [NoteListScreen]
 class NoteListScreenWidgetModel
     extends WidgetModel<NoteListScreen, NoteListScreenModel>
     implements INoteListWidgetModel {
-  final ThemeWrapper _themeWrapper;
+  // TODO(Zemcov): используй тему final ThemeWrapper _themeWrapper;
   final _noteListState = EntityStateNotifier<List<Note>>();
 
   @override
@@ -33,7 +32,7 @@ class NoteListScreenWidgetModel
 
   NoteListScreenWidgetModel(
     NoteListScreenModel model,
-    this._themeWrapper,
+    // TODO(Zemcov): используй тему this._themeWrapper,
   ) : super(model);
 
   @override
@@ -45,10 +44,9 @@ class NoteListScreenWidgetModel
   @override
   void onErrorHandle(Object error) {
     super.onErrorHandle(error);
-    // TODO(Zemcov): добавь обработку ошибок
-    scaffoldMessengerKey.currentState?.showSnackBar(
-      SnackBar(content: Text(error.toString())),
-    );
+    hideSnackBar();
+    // TODO(Zemcov): добавь обработчик ошибок (с компьютерного на человеческий)
+    showSimpleSnackBar(error.toString());
   }
 
   @override
@@ -124,25 +122,10 @@ class NoteListScreenWidgetModel
 
   Future<bool> _getConfirmFromSnackBar() async {
     var isConfirm = true;
-    await scaffoldMessengerKey.currentState
-        ?.showSnackBar(
-          // TODO(Zemcov): техдолг. Вынести в библиотеку виджетов
-          SnackBar(
-            content: Row(
-              children: [
-                const Expanded(child: Text('Удаление...')),
-                TextButton(
-                  onPressed: () {
-                    isConfirm = false;
-                    scaffoldMessengerKey.currentState?.hideCurrentSnackBar();
-                  },
-                  child: const Text('Отмена'),
-                ),
-              ],
-            ),
-          ),
-        )
-        .closed;
+
+    await showRevertSnackBar(
+      onRevert: (isReverted) => isConfirm = !isReverted,
+    )?.closed;
     return isConfirm;
   }
 

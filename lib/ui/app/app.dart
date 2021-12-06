@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:time_tracker/res/theme/app_colors.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen.dart';
-
-GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
-    GlobalKey<ScaffoldMessengerState>();
+import 'package:time_tracker/utils/snack_bars.dart';
 
 /// App main widget.
 class App extends StatelessWidget {
@@ -14,6 +12,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       scaffoldMessengerKey: scaffoldMessengerKey,
       title: 'Time Tracker',
+      themeMode: ThemeMode.light,
       theme: ThemeData(
         scaffoldBackgroundColor: AppColors.background,
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -27,7 +26,6 @@ class App extends StatelessWidget {
         primaryColor: Colors.blue,
         fontFamily: 'Roboto',
       ),
-      darkTheme: ThemeData(),
       home: const NoteListScreen(),
     );
   }
