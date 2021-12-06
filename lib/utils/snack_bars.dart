@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
     GlobalKey<ScaffoldMessengerState>();
 
-void hideSnackBar() => scaffoldMessengerKey.currentState?.hideCurrentSnackBar();
+void hideCurrentSnackBar() =>
+    scaffoldMessengerKey.currentState?.hideCurrentSnackBar();
 
 ScaffoldFeatureController<SnackBar, SnackBarClosedReason>? showSimpleSnackBar(
   String message,

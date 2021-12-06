@@ -28,9 +28,12 @@ class NoteListScreen extends ElementaryWidget<INoteListWidgetModel> {
         listenableEntityState: wm.noteListState,
         loadingBuilder: (_, __) => const LoadingWidget(),
         errorBuilder: (_, __, ___) => const LoadingErrorWidget(),
-        builder: (_, notes) => NoteList(
-          notes: notes,
-          onDismissed: wm.deleteNote,
+        builder: (_, notes) => RefreshIndicator(
+          onRefresh: wm.loadAllNotes,
+          child: NoteList(
+            notes: notes,
+            onDismissed: wm.deleteNote,
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(

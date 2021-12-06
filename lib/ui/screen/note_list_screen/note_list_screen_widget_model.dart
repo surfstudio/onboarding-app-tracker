@@ -24,7 +24,6 @@ NoteListScreenWidgetModel noteListScreenWidgetModelFactory(
 class NoteListScreenWidgetModel
     extends WidgetModel<NoteListScreen, NoteListScreenModel>
     implements INoteListWidgetModel {
-  // TODO(Zemcov): используй тему final ThemeWrapper _themeWrapper;
   final _noteListState = EntityStateNotifier<List<Note>>();
 
   @override
@@ -32,21 +31,31 @@ class NoteListScreenWidgetModel
 
   NoteListScreenWidgetModel(
     NoteListScreenModel model,
-    // TODO(Zemcov): используй тему this._themeWrapper,
   ) : super(model);
 
   @override
   void initWidgetModel() {
     super.initWidgetModel();
-    _loadNoteList();
+    loadAllNotes();
   }
 
   @override
   void onErrorHandle(Object error) {
     super.onErrorHandle(error);
-    hideSnackBar();
+    hideCurrentSnackBar();
     // TODO(Zemcov): добавь обработчик ошибок (с компьютерного на человеческий)
     showSimpleSnackBar(error.toString());
+  }
+
+  @override
+  Future<void> loadAllNotes() async {
+    final previousData = _noteListState.value?.data;
+    try {
+      final res = await model.loadAllNotes();
+      _noteListState.content(res);
+    } on Exception catch (e) {
+      _noteListState.error(e, previousData);
+    }
   }
 
   @override
@@ -65,8 +74,13 @@ class NoteListScreenWidgetModel
     }
     try {
       final resultList = await model.deleteNote(deletingNote.id);
-      _noteListState.content(resultList);
+      // TODO(Question): Отрабатывает криво если удалять сразу несколько заметок
+      // _noteListState.content(resultList);
     } on Exception catch (_) {
+      // TODO(Question): При быстром удалении нескольких заметок обработка ошибки возращает неактуальные данные.
+      // Например при быстром удалении 5 заменток и возникновении обибки на 3 заметке
+      // на экране останется 3, 4 и 5 заметка, не смотря на то, что в репозитории
+      // осталась только 3 заметка
       _noteListState.content(previousData);
     }
   }
@@ -122,7 +136,7 @@ class NoteListScreenWidgetModel
 
   Future<bool> _getConfirmFromSnackBar() async {
     var isConfirm = true;
-
+    hideCurrentSnackBar();
     await showRevertSnackBar(
       onRevert: (isReverted) => isConfirm = !isReverted,
     )?.closed;
@@ -166,14 +180,4 @@ class NoteListScreenWidgetModel
           );
         },
       );
-
-  Future<void> _loadNoteList() async {
-    final previousData = _noteListState.value?.data;
-    try {
-      final res = await model.loadAllNotes();
-      _noteListState.content(res);
-    } on Exception catch (e) {
-      _noteListState.error(e, previousData);
-    }
-  }
 }

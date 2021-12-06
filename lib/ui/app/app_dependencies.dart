@@ -1,7 +1,7 @@
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:time_tracker/data/note_repository.dart';
+import 'package:time_tracker/data/temp_local_note_repository.dart';
 import 'package:time_tracker/ui/app/app.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen_model.dart';
 import 'package:time_tracker/utils/error/default_error_handler.dart';

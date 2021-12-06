@@ -27,7 +27,7 @@ class TempLocalNoteRepository implements INoteRepository {
   @override
   Future<List<Note>> deleteNote(String noteId) async {
     await _networkImitation.addDuration();
-    _networkImitation.addException(howOften: 2);
+    _networkImitation.addException(howOften: 3);
     _checkElementInList(noteId);
     return _data..removeWhere((note) => note.id == noteId);
   }
