@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:time_tracker/domain/note.dart';
 import 'package:time_tracker/res/theme/app_edge_insets.dart';
-import 'package:time_tracker/ui/screen/note_list_screen/components/empty_list_widget.dart';
+import 'package:time_tracker/ui/screen/components/empty_list_widget.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/components/note_widget.dart';
 
 class NoteList extends StatelessWidget {

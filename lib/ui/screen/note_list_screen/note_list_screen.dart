@@ -2,8 +2,8 @@ import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:time_tracker/domain/note.dart';
 import 'package:time_tracker/res/theme/app_typography.dart';
-import 'package:time_tracker/ui/screen/note_list_screen/components/error_widget.dart';
-import 'package:time_tracker/ui/screen/note_list_screen/components/loading_widget.dart';
+import 'package:time_tracker/ui/screen/components/loading_error_widget.dart';
+import 'package:time_tracker/ui/screen/components/loading_widget.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/components/note_list.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen_widget_model.dart';
 
