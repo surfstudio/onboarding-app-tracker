@@ -1,4 +1,6 @@
-# Time Tracker
+# onboarding-app-tracker
 
-At this time it's just my first onboarding test app.
-![plot](./screen.png)
+## Time Tracker App
+![](./screen.png)
+
+
