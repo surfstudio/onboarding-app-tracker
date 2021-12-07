@@ -30,6 +30,15 @@ class Note {
         startDateTime: startDateTime ?? this.startDateTime,
         endDateTime: endDateTime ?? this.endDateTime,
       );
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'id': id,
+      'title': title,
+      'startDateTime': startDateTime,
+      'endDateTime': endDateTime,
+    };
+  }
 }
 
 class _NoteDuration {

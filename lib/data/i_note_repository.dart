@@ -2,16 +2,16 @@ import 'package:time_tracker/domain/note.dart';
 
 abstract class INoteRepository {
   /// Return all notes
-  Future<Iterable<Note>> loadAllNotes();
+  Future<List<Note>> loadAllNotes();
 
   /// Add a new note
-  Future<List<Note>> addNote(Note note);
+  Future<void> addNote(Note note);
 
   /// Delete note by id
-  Future<List<Note>> deleteNote(String noteId);
+  Future<void> deleteNote(String noteId);
 
   /// Edit note data by id
-  Future<List<Note>> editNote({
+  Future<void> editNote({
     required String noteId,
     required Note newNoteData,
   });

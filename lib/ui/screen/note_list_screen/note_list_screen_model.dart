@@ -1,19 +1,17 @@
 import 'package:elementary/elementary.dart';
 import 'package:time_tracker/data/i_note_repository.dart';
-import 'package:time_tracker/data/temp_local_note_repository.dart';
 import 'package:time_tracker/domain/note.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen.dart';
 
 /// Model for [NoteListScreen]
 class NoteListScreenModel extends ElementaryModel implements INoteRepository {
-  final TempLocalNoteRepository _noteRepository;
+  final INoteRepository _noteRepository;
 
   NoteListScreenModel(
     this._noteRepository,
     ErrorHandler errorHandler,
   ) : super(errorHandler: errorHandler);
 
-  // TODO(Zemcov): Спроси почему Iterable а не List (изменил всё на лист)
   @override
   Future<List<Note>> loadAllNotes() async {
     try {
@@ -25,9 +23,9 @@ class NoteListScreenModel extends ElementaryModel implements INoteRepository {
   }
 
   @override
-  Future<List<Note>> addNote(Note note) async {
+  Future<void> addNote(Note note) async {
     try {
-      return await _noteRepository.addNote(note);
+      await _noteRepository.addNote(note);
     } on Exception catch (e) {
       handleError(e);
       rethrow;
@@ -35,9 +33,9 @@ class NoteListScreenModel extends ElementaryModel implements INoteRepository {
   }
 
   @override
-  Future<List<Note>> deleteNote(String noteId) async {
+  Future<void> deleteNote(String noteId) async {
     try {
-      return await _noteRepository.deleteNote(noteId);
+      await _noteRepository.deleteNote(noteId);
     } on Exception catch (e) {
       handleError(e);
       rethrow;
@@ -45,12 +43,12 @@ class NoteListScreenModel extends ElementaryModel implements INoteRepository {
   }
 
   @override
-  Future<List<Note>> editNote({
+  Future<void> editNote({
     required String noteId,
     required Note newNoteData,
   }) async {
     try {
-      return await _noteRepository.editNote(
+      await _noteRepository.editNote(
         noteId: noteId,
         newNoteData: newNoteData,
       );

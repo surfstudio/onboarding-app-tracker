@@ -1,7 +1,8 @@
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:time_tracker/data/temp_local_note_repository.dart';
+import 'package:time_tracker/data/cloud_firestore_repository.dart';
+import 'package:time_tracker/data/i_note_repository.dart';
 import 'package:time_tracker/ui/app/app.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen_model.dart';
 import 'package:time_tracker/utils/error/default_error_handler.dart';
@@ -18,7 +19,7 @@ class AppDependencies extends StatefulWidget {
 
 class _AppDependenciesState extends State<AppDependencies> {
   late final DefaultErrorHandler _defaultErrorHandler;
-  late final TempLocalNoteRepository _noteRepository;
+  late final INoteRepository _noteRepository;
   late final NoteListScreenModel _noteListScreenModel;
 
   late final ThemeWrapper _themeWrapper;
@@ -29,7 +30,8 @@ class _AppDependenciesState extends State<AppDependencies> {
 
     _defaultErrorHandler = DefaultErrorHandler();
     // TODO(Zemcov): Замени на файрбэйс
-    _noteRepository = TempLocalNoteRepository();
+    // _noteRepository = TempLocalNoteRepository();
+    _noteRepository = CloudFirestoreNoteRepository();
 
     _noteListScreenModel = NoteListScreenModel(
       _noteRepository,

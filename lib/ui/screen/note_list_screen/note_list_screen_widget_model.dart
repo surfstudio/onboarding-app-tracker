@@ -76,7 +76,7 @@ class NoteListScreenWidgetModel
       final resultList = await model.deleteNote(deletingNote.id);
       // TODO(Question): Отрабатывает криво если удалять сразу несколько заметок
       // _noteListState.content(resultList);
-    } on Exception catch (_) {
+    } catch (_) {
       // TODO(Question): При быстром удалении нескольких заметок обработка ошибки возращает неактуальные данные.
       // Например при быстром удалении 5 заменток и возникновении обибки на 3 заметке
       // на экране останется 3, 4 и 5 заметка, не смотря на то, что в репозитории
@@ -108,9 +108,8 @@ class NoteListScreenWidgetModel
     final optimisticData = <Note>[...previousData ?? [], newNote];
     _noteListState.content(optimisticData);
     try {
-      final resultList = await model.addNote(newNote);
-      _noteListState.content(resultList);
-    } on Exception catch (_) {
+      await model.addNote(newNote);
+    } catch (_) {
       _noteListState.content(previousData ?? []);
     }
   }
@@ -124,12 +123,11 @@ class NoteListScreenWidgetModel
     final optimisticData = <Note>[...previousData ?? []]..[index] = newNoteData;
     _noteListState.content(optimisticData);
     try {
-      final resultList = await model.editNote(
+      await model.editNote(
         noteId: noteId,
         newNoteData: newNoteData,
       );
-      _noteListState.content(resultList);
-    } on Exception catch (_) {
+    } catch (_) {
       _noteListState.content(previousData ?? []);
     }
   }
