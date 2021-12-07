@@ -14,24 +14,29 @@ class CloudFirestoreNoteRepository implements INoteRepository {
 
   @override
   Future<void> deleteNote(String noteId) async {
-    final doc = (await _collection.get())
-        .docs
-        .firstWhere((e) => e.data()['id'] == noteId);
-    await _collection.doc(doc.id).delete();
+    final docId = await _getDocNameByNoteId(noteId);
+    await _collection.doc(docId).delete();
   }
 
   @override
   Future<void> editNote({
     required String noteId,
     required Note newNoteData,
-  }) {
-    // TODO: implement editNote
-    throw UnimplementedError();
+  }) async {
+    final docId = await _getDocNameByNoteId(noteId);
+    await _collection.doc(docId).update(newNoteData.toJson());
   }
 
   @override
   Future<List<Note>> loadAllNotes() async {
     final data = await _collection.orderBy('startTimestamp').get();
     return data.docs.map((e) => Note.fromJson(e.data())).toList();
+  }
+
+  Future<String> _getDocNameByNoteId(String noteId) async {
+    return (await _collection.get())
+        .docs
+        .firstWhere((e) => e.data()['id'] == noteId)
+        .id;
   }
 }

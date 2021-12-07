@@ -42,10 +42,11 @@ class Note {
         startDateTime = json['startTimestamp'] == null
             ? null
             : DateTime.fromMicrosecondsSinceEpoch(
-                json['startTimestamp'] as int),
+                (json['startTimestamp'] as int) * 1000),
         endDateTime = json['endTimestamp'] == null
             ? null
-            : DateTime.fromMicrosecondsSinceEpoch(json['endTimestamp'] as int);
+            : DateTime.fromMicrosecondsSinceEpoch(
+                (json['endTimestamp'] as int) * 1000);
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
