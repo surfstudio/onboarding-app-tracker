@@ -36,6 +36,7 @@ class NoteWidget extends StatelessWidget {
             const SizedBox(
               height: 5,
             ),
+            Text((note.startDateTime?.second).toString()),
             if (note.noteDuration != null)
               Container(
                 padding: AppEdgeInsets.v2h10,

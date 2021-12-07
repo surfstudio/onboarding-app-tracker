@@ -5,13 +5,16 @@ import 'package:time_tracker/res/theme/app_colors.dart';
 class Note {
   final String id;
   final String title;
-  final DateTime startDateTime;
+  final DateTime? startDateTime;
   final DateTime? endDateTime;
+
   // TODO(Q): когда логику помещать в домен-модель, а когда пользовать WVVW?
   // Мб когда есть перестроение интерфейса?
   _NoteDuration? get noteDuration =>
       _noteDuration == null ? null : _NoteDuration(_noteDuration!);
-  Duration? get _noteDuration => endDateTime?.difference(startDateTime);
+
+  Duration? get _noteDuration =>
+      startDateTime == null ? null : endDateTime?.difference(startDateTime!);
 
   Note({
     required this.id,
@@ -33,12 +36,23 @@ class Note {
         endDateTime: endDateTime ?? this.endDateTime,
       );
 
+  Note.fromJson(Map<String, dynamic> json)
+      : id = json['id'].toString(),
+        title = json['title'].toString(),
+        startDateTime = json['startTimestamp'] == null
+            ? null
+            : DateTime.fromMicrosecondsSinceEpoch(
+                json['startTimestamp'] as int),
+        endDateTime = json['endTimestamp'] == null
+            ? null
+            : DateTime.fromMicrosecondsSinceEpoch(json['endTimestamp'] as int);
+
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'id': id,
       'title': title,
-      'startDateTime': startDateTime.millisecondsSinceEpoch,
-      'endDateTime': endDateTime?.millisecondsSinceEpoch,
+      'startTimestamp': startDateTime?.millisecondsSinceEpoch,
+      'endTimestamp': endDateTime?.millisecondsSinceEpoch,
     };
   }
 }

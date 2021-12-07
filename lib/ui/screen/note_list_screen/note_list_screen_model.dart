@@ -4,7 +4,7 @@ import 'package:time_tracker/domain/note.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen.dart';
 
 /// Model for [NoteListScreen]
-class NoteListScreenModel extends ElementaryModel implements INoteRepository {
+class NoteListScreenModel extends ElementaryModel {
   final INoteRepository _noteRepository;
 
   NoteListScreenModel(
@@ -12,7 +12,6 @@ class NoteListScreenModel extends ElementaryModel implements INoteRepository {
     ErrorHandler errorHandler,
   ) : super(errorHandler: errorHandler);
 
-  @override
   Future<List<Note>> loadAllNotes() async {
     try {
       return await _noteRepository.loadAllNotes();
@@ -22,7 +21,6 @@ class NoteListScreenModel extends ElementaryModel implements INoteRepository {
     }
   }
 
-  @override
   Future<void> addNote(Note note) async {
     try {
       await _noteRepository.addNote(note);
@@ -32,7 +30,6 @@ class NoteListScreenModel extends ElementaryModel implements INoteRepository {
     }
   }
 
-  @override
   Future<void> deleteNote(String noteId) async {
     try {
       await _noteRepository.deleteNote(noteId);
@@ -42,7 +39,6 @@ class NoteListScreenModel extends ElementaryModel implements INoteRepository {
     }
   }
 
-  @override
   Future<void> editNote({
     required String noteId,
     required Note newNoteData,
