@@ -7,6 +7,8 @@ class Note {
   final String title;
   final DateTime startDateTime;
   final DateTime? endDateTime;
+  // TODO(Q): когда логику помещать в домен-модель, а когда пользовать WVVW?
+  // Мб когда есть перестроение интерфейса?
   _NoteDuration? get noteDuration =>
       _noteDuration == null ? null : _NoteDuration(_noteDuration!);
   Duration? get _noteDuration => endDateTime?.difference(startDateTime);
