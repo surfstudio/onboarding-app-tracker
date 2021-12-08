@@ -4,7 +4,7 @@ import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:time_tracker/domain/note.dart';
-import 'package:time_tracker/res/theme/app_edge_insets.dart';
+import 'package:time_tracker/ui/screen/note_list_screen/components/input_note_dialog.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen_model.dart';
 import 'package:time_tracker/utils/snack_bars.dart';
@@ -87,22 +87,43 @@ class NoteListScreenWidgetModel
   }
 
   @override
-  Future<void> addNoteWithDialogAndUpdateLastNote() async {
+  Future<void> showAddNoteDialog() async {
     final previousData = _noteListState.value?.data;
     final lastNote = (previousData ?? []).isEmpty ? null : previousData?.last;
-    final newNote = await _getNoteByDialog();
-    if (newNote == null) {
-      return;
-    }
-    unawaited(_addNote(newNote));
-    if (lastNote == null || lastNote.endDateTime != null) {
-      return;
-    }
-    unawaited(_editNote(
-      lastNote.id,
-      lastNote.copyWith(endDateTime: DateTime.now()),
-    ));
+    await _showAddNoteDialog(lastNote);
   }
+
+  Future<void> _showAddNoteDialog(Note? lastNote) => showDialog<void>(
+        context: context,
+        builder: (context) {
+          const uuid = Uuid();
+          String? title;
+
+          void onChanged(String s) => title = s;
+
+          Future<void> onSubmit() async {
+            if (title == null) {
+              return;
+            }
+            final newNote = Note(
+              startDateTime: DateTime.now(),
+              id: uuid.v1(),
+              title: title!,
+            );
+            unawaited(_addNote(newNote));
+            if (lastNote == null || lastNote.endDateTime != null) {
+              return;
+            }
+            unawaited(_editNote(
+              lastNote.id,
+              lastNote.copyWith(endDateTime: DateTime.now()),
+            ));
+            Navigator.pop(context);
+          }
+
+          return InputNoteDialog(onChanged: onChanged, onSubmit: onSubmit);
+        },
+      );
 
   Future<void> _addNote(Note newNote) async {
     final previousData = _noteListState.value?.data;
@@ -141,42 +162,4 @@ class NoteListScreenWidgetModel
     )?.closed;
     return isConfirm;
   }
-
-  Future<Note?> _getNoteByDialog() => showDialog<Note?>(
-        context: context,
-        builder: (context) {
-          const uuid = Uuid();
-          String? title;
-          // TODO(Zemcov): техдолг. Вынести в библиотеку виджетов
-          return SimpleDialog(
-            contentPadding: AppEdgeInsets.b10h20,
-            title: const Text('Ввидите название задачи'),
-            children: [
-              TextFormField(
-                onChanged: (s) => title = s,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(
-                        context,
-                        title == null
-                            ? null
-                            : Note(
-                                startDateTime: DateTime.now(),
-                                id: uuid.v1(),
-                                title: title!,
-                              ),
-                      );
-                    },
-                    child: const Text('Ввести'),
-                  ),
-                ],
-              ),
-            ],
-          );
-        },
-      );
 }

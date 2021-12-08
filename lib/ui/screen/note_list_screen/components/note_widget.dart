@@ -36,7 +36,6 @@ class NoteWidget extends StatelessWidget {
             const SizedBox(
               height: 5,
             ),
-            // SinceFromWidget(),
             if (note.noteDuration != null)
               DurationWidget(noteDuration: note.noteDuration!)
             else

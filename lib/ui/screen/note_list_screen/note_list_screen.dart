@@ -37,7 +37,7 @@ class NoteListScreen extends ElementaryWidget<INoteListWidgetModel> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: wm.addNoteWithDialogAndUpdateLastNote,
+        onPressed: wm.showAddNoteDialog,
         child: const Icon(Icons.add),
       ),
     );

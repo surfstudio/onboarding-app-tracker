@@ -19,7 +19,12 @@ class DurationWidget extends StatelessWidget {
     return AppColors.noteDuration.elementAt(0);
   }
 
-  const DurationWidget({Key? key, required this.noteDuration})
+  BoxDecoration get _decoration => const BoxDecoration(
+        color: AppColors.bgGreen,
+        borderRadius: BorderRadius.all(Radius.circular(15)),
+      );
+
+  const DurationWidget({required this.noteDuration, Key? key})
       : super(key: key);
 
   @override
@@ -33,11 +38,6 @@ class DurationWidget extends StatelessWidget {
       ),
     );
   }
-
-  BoxDecoration get _decoration => const BoxDecoration(
-        color: AppColors.bgGreen,
-        borderRadius: BorderRadius.all(Radius.circular(15)),
-      );
 
   String _durationToString(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
