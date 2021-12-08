@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:time_tracker/domain/note.dart';
 import 'package:time_tracker/res/theme/app_colors.dart';
-import 'package:time_tracker/res/theme/app_decoration.dart';
 import 'package:time_tracker/res/theme/app_edge_insets.dart';
 import 'package:time_tracker/res/theme/app_typography.dart';
+import 'package:time_tracker/ui/screen/note_list_screen/components/duration_widget.dart';
 
 class NoteWidget extends StatelessWidget {
   final Note note;
@@ -36,17 +36,9 @@ class NoteWidget extends StatelessWidget {
             const SizedBox(
               height: 5,
             ),
-            Text((note.startDateTime?.millisecondsSinceEpoch).toString()),
+            // SinceFromWidget(),
             if (note.noteDuration != null)
-              Container(
-                padding: AppEdgeInsets.v2h10,
-                decoration: AppDecoration.note
-                    .copyWith(color: note.noteDuration!.color),
-                child: Text(
-                  note.noteDuration!.title,
-                  style: AppTypography.cardStatus,
-                ),
-              )
+              DurationWidget(noteDuration: note.noteDuration!)
             else
               const Text(
                 'в процессе...',
@@ -58,3 +50,18 @@ class NoteWidget extends StatelessWidget {
     );
   }
 }
+//
+// class SinceFromWidget extends StatelessWidget {
+//   final DateTime startDateTime;
+//   const SinceFromWidget({
+//     Key? key, requared this.startDateTime,
+//   }) : super(key: key);
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Text(
+//       (note.startDateTime?.millisecondsSinceEpoch).toString(),
+//       style: AppTypography.cardStatusInProgress,
+//     );
+//   }
+// }

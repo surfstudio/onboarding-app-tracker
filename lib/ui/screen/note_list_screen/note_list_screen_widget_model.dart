@@ -58,6 +58,7 @@ class NoteListScreenWidgetModel
     }
   }
 
+  // TODO(Z): Лучше ждать выполнение запроса. И не удалять а перемещать в коллекцию удаленных.
   @override
   Future<void> deleteNote(int index) async {
     final previousData = _noteListState.value?.data;
@@ -76,7 +77,7 @@ class NoteListScreenWidgetModel
       await model.deleteNote(deletingNote.id);
       // TODO(Question): Отрабатывает криво если удалять сразу несколько заметок
       // _noteListState.content(resultList);
-    } catch (_) {
+    } on Exception catch (_) {
       // TODO(Question): При быстром удалении нескольких заметок обработка ошибки возращает неактуальные данные.
       // Например при быстром удалении 5 заменток и возникновении обибки на 3 заметке
       // на экране останется 3, 4 и 5 заметка, не смотря на то, что в репозитории
@@ -109,7 +110,7 @@ class NoteListScreenWidgetModel
     _noteListState.content(optimisticData);
     try {
       await model.addNote(newNote);
-    } catch (_) {
+    } on Exception catch (_) {
       _noteListState.content(previousData ?? []);
     }
   }
@@ -127,7 +128,7 @@ class NoteListScreenWidgetModel
         noteId: noteId,
         newNoteData: newNoteData,
       );
-    } catch (_) {
+    } on Exception catch (_) {
       _noteListState.content(previousData ?? []);
     }
   }

@@ -1,6 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:time_tracker/res/theme/app_colors.dart';
-
 /// Note model.
 class Note {
   final String id;
@@ -8,12 +5,7 @@ class Note {
   final DateTime? startDateTime;
   final DateTime? endDateTime;
 
-  // TODO(Q): когда логику помещать в домен-модель, а когда пользовать WVVW?
-  // Мб когда есть перестроение интерфейса?
-  _NoteDuration? get noteDuration =>
-      _noteDuration == null ? null : _NoteDuration(_noteDuration!);
-
-  Duration? get _noteDuration =>
+  Duration? get noteDuration =>
       startDateTime == null ? null : endDateTime?.difference(startDateTime!);
 
   Note({
@@ -22,6 +14,20 @@ class Note {
     required this.startDateTime,
     this.endDateTime,
   });
+
+  Note.fromJson(Map<String, dynamic> json)
+      : id = json['id'].toString(),
+        title = json['title'].toString(),
+        startDateTime = json['startTimestamp'] == null
+            ? null
+            : DateTime.fromMicrosecondsSinceEpoch(
+                (json['startTimestamp'] as int) * 1000,
+              ),
+        endDateTime = json['endTimestamp'] == null
+            ? null
+            : DateTime.fromMicrosecondsSinceEpoch(
+                (json['endTimestamp'] as int) * 1000,
+              );
 
   Note copyWith({
     String? id,
@@ -36,18 +42,6 @@ class Note {
         endDateTime: endDateTime ?? this.endDateTime,
       );
 
-  Note.fromJson(Map<String, dynamic> json)
-      : id = json['id'].toString(),
-        title = json['title'].toString(),
-        startDateTime = json['startTimestamp'] == null
-            ? null
-            : DateTime.fromMicrosecondsSinceEpoch(
-                (json['startTimestamp'] as int) * 1000),
-        endDateTime = json['endTimestamp'] == null
-            ? null
-            : DateTime.fromMicrosecondsSinceEpoch(
-                (json['endTimestamp'] as int) * 1000);
-
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'id': id,
@@ -55,39 +49,5 @@ class Note {
       'startTimestamp': startDateTime?.millisecondsSinceEpoch,
       'endTimestamp': endDateTime?.millisecondsSinceEpoch,
     };
-  }
-}
-
-class _NoteDuration {
-  final Duration noteDuration;
-
-  String get title => _durationToString(noteDuration);
-
-  /// The [color] depends on the [noteDuration] value.
-  Color get color {
-    if (noteDuration.inHours > 2) {
-      return AppColors.noteDuration.elementAt(2);
-    }
-    if (noteDuration.inMinutes > 30) {
-      return AppColors.noteDuration.elementAt(1);
-    }
-    return AppColors.noteDuration.elementAt(0);
-  }
-
-  _NoteDuration(this.noteDuration);
-
-  String _durationToString(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final twoDigitHours = twoDigits(duration.inHours);
-    final twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
-    final twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
-    String format(String twoDigits, String description) {
-      if (twoDigits == '00') {
-        return '';
-      }
-      return '$twoDigits $description';
-    }
-
-    return ' ${format(twoDigitHours, 'час ')}${format(twoDigitMinutes, 'мин ')}${format(twoDigitSeconds, 'сек ')}';
   }
 }
