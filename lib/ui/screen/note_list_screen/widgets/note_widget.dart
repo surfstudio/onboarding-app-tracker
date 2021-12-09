@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:time_tracker/domain/note.dart';
-import 'package:time_tracker/res/theme/app_colors.dart';
-import 'package:time_tracker/res/theme/app_edge_insets.dart';
-import 'package:time_tracker/res/theme/app_typography.dart';
-import 'package:time_tracker/ui/screen/note_list_screen/components/duration_widget.dart';
+import 'package:time_tracker/ui/res/app_colors.dart';
+import 'package:time_tracker/ui/res/app_edge_insets.dart';
+import 'package:time_tracker/ui/res/app_typography.dart';
+import 'package:time_tracker/ui/screen/note_list_screen/widgets/duration_widget.dart';
 
 class NoteWidget extends StatelessWidget {
   final Note note;
   final EdgeInsets margin;
+
   const NoteWidget({
     required this.note,
     Key? key,

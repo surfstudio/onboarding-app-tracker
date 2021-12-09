@@ -4,10 +4,10 @@ import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:time_tracker/domain/note.dart';
-import 'package:time_tracker/ui/screen/note_list_screen/components/input_note_dialog.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen_model.dart';
-import 'package:time_tracker/utils/snack_bars.dart';
+import 'package:time_tracker/ui/screen/note_list_screen/widgets/input_note_dialog.dart';
+import 'package:time_tracker/ui/widgets/snackbar/snack_bars.dart';
 import 'package:uuid/uuid.dart';
 
 part 'i_note_list_widget_model.dart';

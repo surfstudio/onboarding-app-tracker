@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:time_tracker/data/i_note_repository.dart';
+import 'package:time_tracker/data/local/i_note_repository.dart';
 import 'package:time_tracker/domain/note.dart';
 
 class CloudFirestoreNoteRepository implements INoteRepository {
