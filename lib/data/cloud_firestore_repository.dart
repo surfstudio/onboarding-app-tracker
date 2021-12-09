@@ -6,8 +6,6 @@ import 'package:time_tracker/domain/note.dart';
 
 class CloudFirestoreNoteRepository implements INoteRepository {
   final _noteList = FirebaseFirestore.instance.collection('note_list');
-  final _deletedNoteList =
-      FirebaseFirestore.instance.collection('deleted_note_list');
 
   @override
   Future<void> addNote(Note note) async {
@@ -17,7 +15,6 @@ class CloudFirestoreNoteRepository implements INoteRepository {
   @override
   Future<void> deleteNote(String noteId) async {
     final doc = await _getDocByNoteId(noteId);
-    await _deletedNoteList.add(doc.data());
     await _noteList.doc(doc.id).delete();
   }
 

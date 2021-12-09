@@ -58,30 +58,34 @@ class NoteListScreenWidgetModel
     }
   }
 
-  // TODO(Z): Лучше ждать выполнение запроса. И не удалять а перемещать в коллекцию удаленных.
   @override
-  Future<void> deleteNote(int index) async {
+  Future<Note?> deleteNote(int index) async {
     final previousData = _noteListState.value?.data;
     if (previousData == null) {
-      return;
+      return null;
     }
     final deletingNote = previousData.elementAt(index);
     final optimisticData = [...previousData]..remove(deletingNote);
     _noteListState.content(optimisticData);
-    final isConfirm = await _getConfirmFromSnackBar();
-    if (!isConfirm) {
-      _noteListState.content(previousData);
-      return;
-    }
     try {
       await model.deleteNote(deletingNote.id);
+      return deletingNote;
     } on Exception catch (_) {
       final newActualData = (_noteListState.value?.data ?? [])
         ..add(deletingNote)
-        ..sort((a, b) => (a.startDateTime ?? DateTime.now())
-            .compareTo(b.startDateTime ?? DateTime.now()));
+        ..sort(_sortByStartDateTimeCallback);
       _noteListState.content(newActualData);
+      return null;
     }
+  }
+
+  @override
+  Future<void> showCancelDeleteSnackBar(Note deletedNote) async {
+    hideCurrentSnackBar();
+    await showRevertSnackBar(
+      title: 'Заметка ${deletedNote.title} удалена',
+      onRevert: () async => _addNoteOptimistic(deletedNote),
+    )?.closed;
   }
 
   @override
@@ -108,11 +112,11 @@ class NoteListScreenWidgetModel
               id: uuid.v1(),
               title: title!,
             );
-            unawaited(_addNote(newNote));
+            unawaited(_addNoteOptimistic(newNote));
             if (lastNote == null || lastNote.endDateTime != null) {
               return;
             }
-            unawaited(_editNote(
+            unawaited(_editNoteOptimistic(
               lastNote.id,
               lastNote.copyWith(endDateTime: DateTime.now()),
             ));
@@ -123,9 +127,10 @@ class NoteListScreenWidgetModel
         },
       );
 
-  Future<void> _addNote(Note newNote) async {
+  Future<void> _addNoteOptimistic(Note newNote) async {
     final previousData = _noteListState.value?.data;
-    final optimisticData = <Note>[...previousData ?? [], newNote];
+    final optimisticData = <Note>[...previousData ?? [], newNote]
+      ..sort(_sortByStartDateTimeCallback);
     _noteListState.content(optimisticData);
     try {
       await model.addNote(newNote);
@@ -136,7 +141,7 @@ class NoteListScreenWidgetModel
     }
   }
 
-  Future<void> _editNote(String noteId, Note newNoteData) async {
+  Future<void> _editNoteOptimistic(String noteId, Note newNoteData) async {
     final previousData = _noteListState.value?.data;
     final index = (previousData ?? []).indexWhere((e) => e.id == noteId);
     if (index == -1) {
@@ -154,12 +159,7 @@ class NoteListScreenWidgetModel
     }
   }
 
-  Future<bool> _getConfirmFromSnackBar() async {
-    var isConfirm = true;
-    hideCurrentSnackBar();
-    await showRevertSnackBar(
-      onRevert: (isReverted) => isConfirm = !isReverted,
-    )?.closed;
-    return isConfirm;
-  }
+  int _sortByStartDateTimeCallback(Note a, Note b) =>
+      (a.startDateTime ?? DateTime.now())
+          .compareTo(b.startDateTime ?? DateTime.now());
 }

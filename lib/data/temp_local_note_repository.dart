@@ -14,7 +14,7 @@ class TempLocalNoteRepository implements INoteRepository {
   @override
   Future<List<Note>> loadAllNotes() async {
     await _networkImitation.addDuration();
-    return _data;
+    return _data..sort(_sortByStartDateTimeCallback);
   }
 
   @override
@@ -52,6 +52,10 @@ class TempLocalNoteRepository implements INoteRepository {
       throw Exception('Element not found');
     }
   }
+
+  int _sortByStartDateTimeCallback(Note a, Note b) =>
+      (a.startDateTime ?? DateTime.now())
+          .compareTo(b.startDateTime ?? DateTime.now());
 }
 
 /// Класс используется для отлидки

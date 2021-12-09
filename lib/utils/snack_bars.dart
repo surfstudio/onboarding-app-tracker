@@ -15,8 +15,8 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason>? showSimpleSnackBar(
 }
 
 ScaffoldFeatureController<SnackBar, SnackBarClosedReason>? showRevertSnackBar({
-  required bool Function(bool isReverted) onRevert,
-  String title = 'Удаление...',
+  required VoidCallback onRevert,
+  String title = 'Удалено',
   String revertButtonLabel = 'Отмена',
 }) {
   return scaffoldMessengerKey.currentState?.showSnackBar(
@@ -26,7 +26,7 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason>? showRevertSnackBar({
           Expanded(child: Text(title)),
           TextButton(
             onPressed: () {
-              onRevert(true);
+              onRevert();
               scaffoldMessengerKey.currentState?.hideCurrentSnackBar();
             },
             child: Text(revertButtonLabel),

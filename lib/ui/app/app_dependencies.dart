@@ -1,8 +1,8 @@
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:time_tracker/data/cloud_firestore_repository.dart';
 import 'package:time_tracker/data/i_note_repository.dart';
-import 'package:time_tracker/data/temp_local_note_repository.dart';
 import 'package:time_tracker/ui/app/app.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen_model.dart';
 import 'package:time_tracker/utils/error/default_error_handler.dart';
@@ -29,8 +29,7 @@ class _AppDependenciesState extends State<AppDependencies> {
     super.initState();
 
     _defaultErrorHandler = DefaultErrorHandler();
-    _noteRepository = TempLocalNoteRepository();
-    // _noteRepository = CloudFirestoreNoteRepository();
+    _noteRepository = CloudFirestoreNoteRepository();
 
     _noteListScreenModel = NoteListScreenModel(
       _noteRepository,
