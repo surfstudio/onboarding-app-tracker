@@ -1,5 +1,5 @@
 import 'package:time_tracker/data/local/i_note_repository.dart';
-import 'package:time_tracker/domain/note.dart';
+import 'package:time_tracker/domain/note/note.dart';
 
 class TempLocalNoteRepository implements INoteRepository {
   final _noteList = <Note>[];

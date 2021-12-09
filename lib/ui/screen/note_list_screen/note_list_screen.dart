@@ -1,6 +1,6 @@
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
-import 'package:time_tracker/domain/note.dart';
+import 'package:time_tracker/domain/note/note.dart';
 import 'package:time_tracker/ui/res/app_typography.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen_widget_model.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/widgets/note_list.dart';

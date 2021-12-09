@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:time_tracker/domain/note.dart';
+import 'package:time_tracker/domain/note/note.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen_model.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/widgets/input_note_dialog.dart';
@@ -26,10 +26,10 @@ class NoteListScreenWidgetModel
     implements INoteListWidgetModel {
   final _noteListState = EntityStateNotifier<List<Note>>();
 
+  final ScrollController _listScrollController = ScrollController();
+
   @override
   ListenableState<EntityState<List<Note>>> get noteListState => _noteListState;
-
-  final ScrollController _listScrollController = ScrollController();
 
   ScrollController get listScrollController => _listScrollController;
 
