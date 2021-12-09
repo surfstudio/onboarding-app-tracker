@@ -29,6 +29,10 @@ class NoteListScreenWidgetModel
   @override
   ListenableState<EntityState<List<Note>>> get noteListState => _noteListState;
 
+  final ScrollController _listScrollController = ScrollController();
+
+  ScrollController get listScrollController => _listScrollController;
+
   NoteListScreenWidgetModel(
     NoteListScreenModel model,
   ) : super(model);
@@ -59,7 +63,7 @@ class NoteListScreenWidgetModel
   }
 
   @override
-  Future<Note?> deleteNote(int index) async {
+  Future<Note?> moveNoteToTrash(int index) async {
     final previousData = _noteListState.value?.data;
     if (previousData == null) {
       return null;
@@ -68,7 +72,7 @@ class NoteListScreenWidgetModel
     final optimisticData = [...previousData]..remove(deletingNote);
     _noteListState.content(optimisticData);
     try {
-      await model.deleteNote(deletingNote.id);
+      await model.moveNoteToTrash(deletingNote.id);
       return deletingNote;
     } on Exception catch (_) {
       final newActualData = (_noteListState.value?.data ?? [])
@@ -84,7 +88,7 @@ class NoteListScreenWidgetModel
     hideCurrentSnackBar();
     await showRevertSnackBar(
       title: 'Заметка ${deletedNote.title} удалена',
-      onRevert: () async => _addNoteOptimistic(deletedNote),
+      onRevert: () async => _restoreNoteOptimistic(deletedNote),
     )?.closed;
   }
 
@@ -137,6 +141,20 @@ class NoteListScreenWidgetModel
     } on Exception catch (_) {
       final newActualData = (_noteListState.value?.data ?? [newNote])
         ..remove(newNote);
+      _noteListState.content(newActualData);
+    }
+  }
+
+  Future<void> _restoreNoteOptimistic(Note deletedNote) async {
+    final previousData = _noteListState.value?.data;
+    final optimisticData = <Note>[...previousData ?? [], deletedNote]
+      ..sort(_sortByStartDateTimeCallback);
+    _noteListState.content(optimisticData);
+    try {
+      await model.restoreNote(deletedNote.id);
+    } on Exception catch (_) {
+      final newActualData = (_noteListState.value?.data ?? [deletedNote])
+        ..remove(deletedNote);
       _noteListState.content(newActualData);
     }
   }

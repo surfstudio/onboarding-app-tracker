@@ -6,6 +6,8 @@ import 'package:time_tracker/domain/note.dart';
 
 class CloudFirestoreNoteRepository implements INoteRepository {
   final _noteList = FirebaseFirestore.instance.collection('note_list');
+  final _deletedNoteList =
+      FirebaseFirestore.instance.collection('deleted_note_list');
 
   @override
   Future<void> addNote(Note note) async {
@@ -13,9 +15,23 @@ class CloudFirestoreNoteRepository implements INoteRepository {
   }
 
   @override
-  Future<void> deleteNote(String noteId) async {
+  Future<void> moveNoteToTrash(String noteId) async {
     final doc = await _getDocByNoteId(noteId);
-    await _noteList.doc(doc.id).delete();
+    final addFuture = _deletedNoteList.add(doc.data());
+    final deleteFuture = _noteList.doc(doc.id).delete();
+    //  Future жду отдельно, чтобы оба действия выполнялись асинхронно
+    await addFuture;
+    await deleteFuture;
+  }
+
+  @override
+  Future<void> restoreNote(String noteId) async {
+    final doc = await _getDocByNoteId(noteId, list: _deletedNoteList);
+    final addFuture = _noteList.add(doc.data());
+    final deleteFuture = _deletedNoteList.doc(doc.id).delete();
+    //  Future жду отдельно, чтобы оба действия выполнялись асинхронно
+    await addFuture;
+    await deleteFuture;
   }
 
   @override
@@ -38,9 +54,12 @@ class CloudFirestoreNoteRepository implements INoteRepository {
   }
 
   Future<QueryDocumentSnapshot<Map<String, dynamic>>> _getDocByNoteId(
-    String noteId,
-  ) async {
-    return (await _noteList.get())
+    String noteId, {
+
+    /// По умолчанию это [_noteList]
+    CollectionReference<Map<String, dynamic>>? list,
+  }) async {
+    return (await (list ?? _noteList).get())
         .docs
         .firstWhere((e) => e.data()['id'] == noteId);
   }

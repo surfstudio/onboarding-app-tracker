@@ -2,34 +2,47 @@ import 'package:time_tracker/data/i_note_repository.dart';
 import 'package:time_tracker/domain/note.dart';
 
 class TempLocalNoteRepository implements INoteRepository {
-  final _data = <Note>[];
+  final _noteList = <Note>[];
+  final _deletedNoteList = <Note>[];
 
   final _NetworkBehaviourImitation _networkImitation =
       _NetworkBehaviourImitation();
 
   TempLocalNoteRepository() {
-    _data.addAll(_networkImitation._mockData);
+    _noteList.addAll(_networkImitation._mockData);
   }
 
   @override
   Future<List<Note>> loadAllNotes() async {
     await _networkImitation.addDuration();
-    return _data..sort(_sortByStartDateTimeCallback);
+    return _noteList..sort(_sortByStartDateTimeCallback);
   }
 
   @override
-  Future<List<Note>> addNote(Note newNote) async {
+  Future<void> addNote(Note newNote) async {
     await _networkImitation.addDuration();
     _networkImitation.addException(howOften: 3);
-    return _data..add(newNote);
+    _noteList.add(newNote);
   }
 
   @override
-  Future<List<Note>> deleteNote(String noteId) async {
+  Future<void> moveNoteToTrash(String noteId) async {
     await _networkImitation.addDuration();
     _networkImitation.addException(howOften: 3);
     _checkElementInList(noteId);
-    return _data..removeWhere((note) => note.id == noteId);
+    final deletedNote = _noteList.firstWhere((note) => note.id == noteId);
+    _deletedNoteList.add(deletedNote);
+    _noteList.remove(deletedNote);
+  }
+
+  @override
+  Future<void> restoreNote(String noteId) async {
+    await _networkImitation.addDuration();
+    _networkImitation.addException(howOften: 3);
+    _checkElementInList(noteId);
+    final deletedNote = _noteList.firstWhere((note) => note.id == noteId);
+    _noteList.add(deletedNote);
+    _deletedNoteList.remove(deletedNote);
   }
 
   @override
@@ -39,16 +52,16 @@ class TempLocalNoteRepository implements INoteRepository {
   }) async {
     await _networkImitation.addDuration();
     _checkElementInList(noteId);
-    _data[_getIndexById(noteId)] = newNoteData;
-    return _data;
+    _noteList[_getIndexById(noteId)] = newNoteData;
+    return _noteList;
   }
 
   int _getIndexById(String noteId) {
-    return _data.indexWhere((note) => note.id == noteId);
+    return _noteList.indexWhere((note) => note.id == noteId);
   }
 
   void _checkElementInList(String noteId) {
-    if (!_data.any((note) => note.id == noteId)) {
+    if (!_noteList.any((note) => note.id == noteId)) {
       throw Exception('Element not found');
     }
   }
