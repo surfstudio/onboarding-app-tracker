@@ -5,7 +5,27 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'note.freezed.dart';
 
 @freezed
-class Note with _$Note {
+class Note with _$Note implements Comparable<Note> {
+  DateTime get startDateTime => DateTime.fromMicrosecondsSinceEpoch(
+        startTimestamp * 1000,
+      );
+
+  DateTime? get endDateTime {
+    if (endTimestamp != null) {
+      return DateTime.fromMicrosecondsSinceEpoch(
+        (endTimestamp as int) * 1000,
+      );
+    }
+  }
+
+  Duration get noteDuration {
+    final resolvedEndTimestamp = endDateTime ?? DateTime.now();
+
+    return resolvedEndTimestamp.difference(startDateTime);
+  }
+
+  bool get isFinished => endTimestamp != null;
+
   factory Note({
     required String id,
     required String title,
@@ -25,21 +45,9 @@ class Note with _$Note {
     );
   }
 
-  DateTime? startDateTime() => DateTime.fromMicrosecondsSinceEpoch(
-        startTimestamp * 1000,
-      );
-
-  DateTime? endDateTime() {
-    if (endTimestamp != null) {
-      return DateTime.fromMicrosecondsSinceEpoch(
-        (endTimestamp as int) * 1000,
-      );
-    }
-  }
-
-  Duration? noteDuration() {
-    if (endTimestamp != null) {
-      return endDateTime()?.difference(startDateTime() ?? DateTime.now());
-    }
+  @override
+  int compareTo(Note other) {
+    final otherStartTime = other.startDateTime;
+    return startDateTime.compareTo(otherStartTime);
   }
 }

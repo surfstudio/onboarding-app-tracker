@@ -8,8 +8,7 @@ class CloudFirestoreNoteRepository implements INoteRepository {
   final _noteList = FirebaseFirestore.instance.collection('note_list');
 
   @override
-  Stream<QuerySnapshot> get noteStream =>
-      FirebaseFirestore.instance.collection('note_list').snapshots();
+  Stream<QuerySnapshot> get noteStream => _noteList.snapshots();
 
   @override
   Future<void> addNote(Note note) async {
@@ -22,9 +21,9 @@ class CloudFirestoreNoteRepository implements INoteRepository {
 
   @override
   Future<void> finishNote(int endTimestamp) async {
-    final data = await _noteList.orderBy('startTimestamp').get();
-    final doc = data.docs.last;
-    await _noteList.doc(doc.id).update({'endTimestamp': endTimestamp});
+    final notesSnapshot = await _noteList.orderBy('startTimestamp').get();
+    final lastRawNote = notesSnapshot.docs.last;
+    await _noteList.doc(lastRawNote.id).update({'endTimestamp': endTimestamp});
   }
 
   @override
@@ -34,14 +33,15 @@ class CloudFirestoreNoteRepository implements INoteRepository {
 
   @override
   Future<List<Note>> loadAllNotes() async {
-    final data = await _noteList.orderBy('startTimestamp').get();
-    await Future<void>.delayed(const Duration(seconds: 2));
-    return data.docs.map((doc) => Note.fromDatabase(doc)).toList();
+    final notesSnapshot = await _noteList.orderBy('startTimestamp').get();
+    return notesSnapshot.docs
+        .map((rawNote) => Note.fromDatabase(rawNote))
+        .toList();
   }
 
   @override
   Future<void> editNote({required String noteId, required Note newNoteData}) {
-    // TODO: implement editNote
+    // TODO(Bazarova): implement editNote
     throw UnimplementedError();
   }
 }

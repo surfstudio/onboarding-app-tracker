@@ -9,7 +9,7 @@ class TempLocalNoteRepository implements INoteRepository {
       _NetworkBehaviourImitation();
 
   @override
-  // TODO(vasbaza): implement noteStream
+  // TODO(Bazarova): implement noteStream
   Stream<QuerySnapshot> get noteStream => throw UnimplementedError();
 
   TempLocalNoteRepository() {
@@ -45,7 +45,7 @@ class TempLocalNoteRepository implements INoteRepository {
 
   @override
   Future<void> finishNote(int endTimestamp) {
-    // TODO(vasbaza): implement finishNote
+    // TODO(Bazarova): implement finishNote
     throw UnimplementedError();
   }
 
@@ -60,8 +60,8 @@ class TempLocalNoteRepository implements INoteRepository {
   }
 
   int _sortByStartDateTimeCallback(Note a, Note b) {
-    final startTimeNoteA = a.startDateTime() ?? DateTime.now();
-    final startTimeNoteB = b.startDateTime() ?? DateTime.now();
+    final startTimeNoteA = a.startDateTime;
+    final startTimeNoteB = b.startDateTime;
     return startTimeNoteA.compareTo(startTimeNoteB);
   }
 }

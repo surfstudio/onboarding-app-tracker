@@ -17,10 +17,6 @@ class NoteWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Duration? noteDuration;
-    if (note.endTimestamp != null) {
-      noteDuration = note.noteDuration();
-    }
     return Card(
       elevation: 20,
       shadowColor: AppColors.shadowColor,
@@ -41,8 +37,8 @@ class NoteWidget extends StatelessWidget {
             const SizedBox(
               height: 5,
             ),
-            if (noteDuration != null)
-              DurationWidget(noteDuration: noteDuration)
+            if (note.isFinished)
+              DurationWidget(noteDuration: note.noteDuration)
             else
               const Text(
                 'в процессе...',

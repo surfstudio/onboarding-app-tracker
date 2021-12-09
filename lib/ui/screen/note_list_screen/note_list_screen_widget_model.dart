@@ -26,7 +26,7 @@ class NoteListScreenWidgetModel
     implements INoteListWidgetModel {
   late final StreamSubscription noteStreamSubscription;
   final _noteListState = EntityStateNotifier<List<Note>>();
-  final ScrollController _listScrollController = ScrollController();
+  final _listScrollController = ScrollController();
 
   @override
   ListenableState<EntityState<List<Note>>> get noteListState => _noteListState;
@@ -40,14 +40,9 @@ class NoteListScreenWidgetModel
   @override
   void initWidgetModel() {
     super.initWidgetModel();
-    noteStreamSubscription = model.noteStream.listen((QuerySnapshot snapshot) {
-      final docs = snapshot.docs;
-      final notes = docs.map((doc) => Note.fromDatabase(doc)).toList()
-        ..sort(_sortByStartDateTimeCallback);
-      _noteListState.content(notes);
-    });
+    noteStreamSubscription = model.noteStream.listen(_noteStreamListener);
   }
-  
+
   @override
   void dispose() {
     noteStreamSubscription.cancel();
@@ -58,32 +53,34 @@ class NoteListScreenWidgetModel
   void onErrorHandle(Object error) {
     super.onErrorHandle(error);
     hideCurrentSnackBar();
-    // TODO(vasbaza): добавь обработчик ошибок (с компьютерного на человеческий)
+    // TODO(Bazarova): добавь обработчик ошибок (с компьютерного на человеческий)
     showSimpleSnackBar(error.toString());
   }
 
   @override
   Future<void> loadAllNotes() async {
-    final previousData = _noteListState.value?.data;
+    final previousState = _noteListState.value?.data;
     _noteListState.loading();
     try {
-      final res = await model.loadAllNotes()
-        ..sort(_sortByStartDateTimeCallback);
-      _noteListState.content(res);
+      final sortedNotes = await model.loadAllNotes()
+        ..sort();
+      _noteListState.content(sortedNotes);
     } on Exception catch (e) {
-      _noteListState.error(e, previousData);
+      _noteListState.error(e, previousState);
     }
   }
 
-  // ToDo(vasbaza): грязная функция, помыть ее
+  // ToDo(Bazarova): грязная функция
   @override
   Future<Note?> moveNoteToTrash(int index) async {
     final noteToDelete = _noteListState.value?.data?.elementAt(index);
     _noteListState.value?.data?.remove(noteToDelete);
+
     final newState = _noteListState.value?.data;
     if (newState != null) {
       _noteListState.content(newState);
     }
+
     if (noteToDelete != null) {
       await model.deleteNote(noteToDelete);
       final shouldDelete = await showCancelDeleteSnackBar(noteToDelete);
@@ -91,11 +88,6 @@ class NoteListScreenWidgetModel
       } else {
         await _addNote(noteToDelete);
         _noteListState.value?.data?.add(noteToDelete);
-        final newState = _noteListState.value?.data
-          ?..sort(_sortByStartDateTimeCallback);
-        if (newState != null) {
-          _noteListState.content(newState);
-        }
       }
     }
   }
@@ -103,54 +95,59 @@ class NoteListScreenWidgetModel
   @override
   Future<bool> showCancelDeleteSnackBar(Note deletedNote) async {
     var shouldDelete = true;
+
     hideCurrentSnackBar();
+
     await showRevertSnackBar(
       title: 'Заметка ${deletedNote.title} удалена',
       onRevert: () => shouldDelete = false,
     )?.closed;
+
     return shouldDelete;
   }
 
   @override
-  Future<void> showAddNoteDialog() async {
-    final previousData = _noteListState.value?.data;
-    final lastNote = (previousData ?? []).isEmpty ? null : previousData?.last;
-    await _showAddNoteDialog(lastNote);
-  }
-
-  Future<void> _showAddNoteDialog(Note? lastNote) => showDialog<void>(
+  Future<void> showAddNoteDialog() async => showDialog<void>(
         context: context,
         builder: (context) {
           String? title;
 
-          void onChanged(String s) => title = s;
+          void onChanged(String inputText) => title = inputText;
 
           void onSubmit() {
-            if (title == null) {
-              return;
+            if (title != null) {
+              final newNote = Note(
+                startTimestamp: DateTime.now().millisecondsSinceEpoch,
+                id: 'default',
+                title: title!,
+              );
+              Navigator.pop(context);
+              _addNoteAndFinishTheLastNote(newNote);
             }
-            final newNote = Note(
-              startTimestamp: DateTime.now().millisecondsSinceEpoch,
-              id: 'default',
-              title: title!,
-            );
-            Navigator.pop(context);
-            _addNoteAndFinishTheLastNote(newNote);
           }
 
           return InputNoteDialog(onChanged: onChanged, onSubmit: onSubmit);
         },
       );
 
+  void _noteStreamListener(QuerySnapshot snapshot) {
+    final notes = snapshot.docs
+        .map((rawNote) => Note.fromDatabase(rawNote))
+        .toList()
+      ..sort();
+    _noteListState.content(notes);
+  }
+
   Future<void> _finishNote(Note newNote) async {
-    if ((_noteListState.value?.data?.length ?? 0) > 1) {
+    final notesCount = _noteListState.value?.data?.length ?? 0;
+    if (notesCount > 1) {
       await model.finishNote(
         newNote.startTimestamp,
       );
     }
   }
 
-  // ToDo(vasbaza): грязная функция
+  // ToDo(Bazarova): грязная функция
   Future<void> _addNoteAndFinishTheLastNote(Note newNote) async {
     await _finishNote(newNote);
     await _addNote(newNote);
@@ -158,24 +155,16 @@ class NoteListScreenWidgetModel
 
   Future<void> _addNote(Note newNote) async {
     _noteListState.value?.data?.add(newNote);
-    final optimisticData = _noteListState.value?.data
-      ?..sort(_sortByStartDateTimeCallback);
-    _noteListState.content(optimisticData!);
+
+    final newState = (_noteListState.value?.data?..sort()) ?? [];
+    _noteListState.content(newState);
+
     try {
-      // await _finishNote(newNote);
       await model.addNote(newNote);
     } on Exception catch (_) {
-      final newActualData = (_noteListState.value?.data ?? [newNote])
+      final currentState = (_noteListState.value?.data ?? [newNote])
         ..remove(newNote);
-      _noteListState.content(newActualData);
+      _noteListState.content(currentState);
     }
-  }
-
-
-  int _sortByStartDateTimeCallback(Note a, Note b) {
-    final startTimeNoteA = a.startDateTime() ?? DateTime.now();
-    final startTimeNoteB = b.startDateTime() ?? DateTime.now();
-
-    return startTimeNoteA.compareTo(startTimeNoteB);
   }
 }
