@@ -35,10 +35,7 @@ class NoteListScreen extends ElementaryWidget<INoteListWidgetModel> {
             child: NoteList(
               notes: notes,
               onDismissed: (index) async {
-                final deletedNote = await wm.moveNoteToTrash(index);
-                if (deletedNote != null) {
-                  await wm.showCancelDeleteSnackBar(deletedNote);
-                }
+                  await wm.moveNoteToTrash(index);
               },
             ),
           ),

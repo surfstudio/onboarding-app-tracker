@@ -42,7 +42,8 @@ class NoteListScreenWidgetModel
     super.initWidgetModel();
     noteStreamSubscription = model.noteStream.listen((QuerySnapshot snapshot) {
       final docs = snapshot.docs;
-      final notes = docs.map((doc) => Note.fromDatabase(doc)).toList();
+      final notes = docs.map((doc) => Note.fromDatabase(doc)).toList()
+        ..sort(_sortByStartDateTimeCallback);
       _noteListState.content(notes);
     });
   }
@@ -57,7 +58,7 @@ class NoteListScreenWidgetModel
   void onErrorHandle(Object error) {
     super.onErrorHandle(error);
     hideCurrentSnackBar();
-    // TODO(Zemcov): добавь обработчик ошибок (с компьютерного на человеческий)
+    // TODO(vasbaza): добавь обработчик ошибок (с компьютерного на человеческий)
     showSimpleSnackBar(error.toString());
   }
 
@@ -65,41 +66,47 @@ class NoteListScreenWidgetModel
   Future<void> loadAllNotes() async {
     final previousData = _noteListState.value?.data;
     try {
-      final res = await model.loadAllNotes();
+      final res = await model.loadAllNotes()
+        ..sort(_sortByStartDateTimeCallback);
       _noteListState.content(res);
     } on Exception catch (e) {
       _noteListState.error(e, previousData);
     }
   }
 
+  // ToDo(vasbaza): грязная функция, помыть ее
   @override
   Future<Note?> moveNoteToTrash(int index) async {
-    final previousData = _noteListState.value?.data;
-    if (previousData == null) {
-      return null;
+    final noteToDelete = _noteListState.value?.data?.elementAt(index);
+    _noteListState.value?.data?.remove(noteToDelete);
+    final newState = _noteListState.value?.data;
+    if (newState != null) {
+      _noteListState.content(newState);
     }
-    final deletingNote = previousData.elementAt(index);
-    final optimisticData = [...previousData]..remove(deletingNote);
-    _noteListState.content(optimisticData);
-    try {
-      await model.moveNoteToTrash(deletingNote.id);
-      return deletingNote;
-    } on Exception catch (_) {
-      final newActualData = (_noteListState.value?.data ?? [])
-        ..add(deletingNote)
-        ..sort(_sortByStartDateTimeCallback);
-      _noteListState.content(newActualData);
-      return null;
+    if (noteToDelete != null) {
+      final shouldDelete = await showCancelDeleteSnackBar(noteToDelete);
+      if (shouldDelete) {
+        await model.deleteNote(noteToDelete);
+      } else {
+        _noteListState.value?.data?.add(noteToDelete);
+        final newState = _noteListState.value?.data
+          ?..sort(_sortByStartDateTimeCallback);
+        if (newState != null) {
+          _noteListState.content(newState);
+        }
+      }
     }
   }
 
   @override
-  Future<void> showCancelDeleteSnackBar(Note deletedNote) async {
+  Future<bool> showCancelDeleteSnackBar(Note deletedNote) async {
+    var shouldDelete = true;
     hideCurrentSnackBar();
     await showRevertSnackBar(
       title: 'Заметка ${deletedNote.title} удалена',
-      onRevert: () async => _restoreNoteOptimistic(deletedNote),
+      onRevert: () => shouldDelete = false,
     )?.closed;
+    return shouldDelete;
   }
 
   @override
@@ -127,7 +134,6 @@ class NoteListScreenWidgetModel
             );
             Navigator.pop(context);
             _addNote(newNote);
-            _finishNote(newNote);
           }
 
           return InputNoteDialog(onChanged: onChanged, onSubmit: onSubmit);
@@ -142,11 +148,14 @@ class NoteListScreenWidgetModel
     }
   }
 
+  // ToDo(vasbaza): грязная функция
   Future<void> _addNote(Note newNote) async {
     _noteListState.value?.data?.add(newNote);
-    final optimisticData = _noteListState.value?.data;
+    final optimisticData = _noteListState.value?.data
+      ?..sort(_sortByStartDateTimeCallback);
     _noteListState.content(optimisticData!);
     try {
+      await _finishNote(newNote);
       await model.addNote(newNote);
     } on Exception catch (_) {
       final newActualData = (_noteListState.value?.data ?? [newNote])
@@ -155,19 +164,6 @@ class NoteListScreenWidgetModel
     }
   }
 
-  Future<void> _restoreNoteOptimistic(Note deletedNote) async {
-    final previousData = _noteListState.value?.data;
-    final optimisticData = <Note>[...previousData ?? [], deletedNote]
-      ..sort(_sortByStartDateTimeCallback);
-    _noteListState.content(optimisticData);
-    try {
-      await model.restoreNote(deletedNote.id);
-    } on Exception catch (_) {
-      final newActualData = (_noteListState.value?.data ?? [deletedNote])
-        ..remove(deletedNote);
-      _noteListState.content(newActualData);
-    }
-  }
 
   int _sortByStartDateTimeCallback(Note a, Note b) {
     final startTimeNoteA = a.startDateTime() ?? DateTime.now();

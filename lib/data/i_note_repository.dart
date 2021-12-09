@@ -7,15 +7,14 @@ abstract class INoteRepository {
   /// Return all notes
   Future<List<Note>> loadAllNotes();
 
+  /// Finishes last note (before new note)
   Future<void> finishNote(int endTimestamp);
 
   /// Add a new note
   Future<void> addNote(Note note);
 
   /// Delete note by id
-  Future<void> moveNoteToTrash(String noteId);
-
-  Future<void> restoreNote(String noteId);
+  Future<void> deleteNote(Note note);
 
   /// Edit note data by id
   Future<void> editNote({

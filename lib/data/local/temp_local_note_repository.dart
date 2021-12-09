@@ -4,10 +4,13 @@ import 'package:time_tracker/domain/note/note.dart';
 
 class TempLocalNoteRepository implements INoteRepository {
   final _noteList = <Note>[];
-  final _deletedNoteList = <Note>[];
 
   final _NetworkBehaviourImitation _networkImitation =
       _NetworkBehaviourImitation();
+
+  @override
+  // TODO(vasbaza): implement noteStream
+  Stream<QuerySnapshot> get noteStream => throw UnimplementedError();
 
   TempLocalNoteRepository() {
     _noteList.addAll(_networkImitation._mockData);
@@ -27,24 +30,7 @@ class TempLocalNoteRepository implements INoteRepository {
   }
 
   @override
-  Future<void> moveNoteToTrash(String noteId) async {
-    await _networkImitation.addDuration();
-    _networkImitation.addException(howOften: 3);
-    _checkElementInList(noteId);
-    final deletedNote = _noteList.firstWhere((note) => note.id == noteId);
-    _deletedNoteList.add(deletedNote);
-    _noteList.remove(deletedNote);
-  }
-
-  @override
-  Future<void> restoreNote(String noteId) async {
-    await _networkImitation.addDuration();
-    _networkImitation.addException(howOften: 3);
-    _checkElementInList(noteId);
-    final deletedNote = _noteList.firstWhere((note) => note.id == noteId);
-    _noteList.add(deletedNote);
-    _deletedNoteList.remove(deletedNote);
-  }
+  Future<void> deleteNote(Note note) async {}
 
   @override
   Future<List<Note>> editNote({
@@ -78,10 +64,6 @@ class TempLocalNoteRepository implements INoteRepository {
     final startTimeNoteB = b.startDateTime() ?? DateTime.now();
     return startTimeNoteA.compareTo(startTimeNoteB);
   }
-
-  @override
-  // TODO: implement noteStream
-  Stream<QuerySnapshot> get noteStream => throw UnimplementedError();
 }
 
 /// Класс используется для отлидки

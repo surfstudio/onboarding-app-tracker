@@ -43,18 +43,9 @@ class NoteListScreenModel extends ElementaryModel {
     }
   }
 
-  Future<void> moveNoteToTrash(String noteId) async {
+  Future<void> deleteNote(Note note) async {
     try {
-      await _noteRepository.moveNoteToTrash(noteId);
-    } on Exception catch (e) {
-      handleError(e);
-      rethrow;
-    }
-  }
-
-  Future<void> restoreNote(String noteId) async {
-    try {
-      await _noteRepository.restoreNote(noteId);
+      await _noteRepository.deleteNote(note);
     } on Exception catch (e) {
       handleError(e);
       rethrow;
