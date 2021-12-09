@@ -1,5 +1,5 @@
 import 'package:elementary/elementary.dart';
-import 'package:time_tracker/data/local/i_note_repository.dart';
+import 'package:time_tracker/data/i_note_repository.dart';
 import 'package:time_tracker/domain/note/note.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen.dart';
 
