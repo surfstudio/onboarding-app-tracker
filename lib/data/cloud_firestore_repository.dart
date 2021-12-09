@@ -5,17 +5,20 @@ import 'package:time_tracker/data/i_note_repository.dart';
 import 'package:time_tracker/domain/note.dart';
 
 class CloudFirestoreNoteRepository implements INoteRepository {
-  final _collection = FirebaseFirestore.instance.collection('note_list');
+  final _noteList = FirebaseFirestore.instance.collection('note_list');
+  final _deletedNoteList =
+      FirebaseFirestore.instance.collection('deleted_note_list');
 
   @override
   Future<void> addNote(Note note) async {
-    await _collection.add(note.toJson());
+    await _noteList.add(note.toJson());
   }
 
   @override
   Future<void> deleteNote(String noteId) async {
-    final docId = await _getDocNameByNoteId(noteId);
-    await _collection.doc(docId).delete();
+    final doc = await _getDocByNoteId(noteId);
+    await _deletedNoteList.add(doc.data());
+    await _noteList.doc(doc.id).delete();
   }
 
   @override
@@ -23,20 +26,25 @@ class CloudFirestoreNoteRepository implements INoteRepository {
     required String noteId,
     required Note newNoteData,
   }) async {
-    final docId = await _getDocNameByNoteId(noteId);
-    await _collection.doc(docId).update(newNoteData.toJson());
+    final docId = await _getDocPathByNoteId(noteId);
+    await _noteList.doc(docId).update(newNoteData.toJson());
   }
 
   @override
   Future<List<Note>> loadAllNotes() async {
-    final data = await _collection.orderBy('startTimestamp').get();
+    final data = await _noteList.orderBy('startTimestamp').get();
     return data.docs.map((e) => Note.fromJson(e.data())).toList();
   }
 
-  Future<String> _getDocNameByNoteId(String noteId) async {
-    return (await _collection.get())
+  Future<String> _getDocPathByNoteId(String noteId) async {
+    return (await _getDocByNoteId(noteId)).id;
+  }
+
+  Future<QueryDocumentSnapshot<Map<String, dynamic>>> _getDocByNoteId(
+    String noteId,
+  ) async {
+    return (await _noteList.get())
         .docs
-        .firstWhere((e) => e.data()['id'] == noteId)
-        .id;
+        .firstWhere((e) => e.data()['id'] == noteId);
   }
 }

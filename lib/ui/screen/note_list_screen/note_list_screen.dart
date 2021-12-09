@@ -30,9 +30,12 @@ class NoteListScreen extends ElementaryWidget<INoteListWidgetModel> {
         errorBuilder: (_, __, ___) => const LoadingErrorWidget(),
         builder: (_, notes) => RefreshIndicator(
           onRefresh: wm.loadAllNotes,
-          child: NoteList(
-            notes: notes,
-            onDismissed: wm.deleteNote,
+          child: SafeArea(
+            top: false,
+            child: NoteList(
+              notes: notes,
+              onDismissed: wm.deleteNote,
+            ),
           ),
         ),
       ),

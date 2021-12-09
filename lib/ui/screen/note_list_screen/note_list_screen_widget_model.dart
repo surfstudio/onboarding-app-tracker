@@ -75,14 +75,12 @@ class NoteListScreenWidgetModel
     }
     try {
       await model.deleteNote(deletingNote.id);
-      // TODO(Question): Отрабатывает криво если удалять сразу несколько заметок
-      // _noteListState.content(resultList);
     } on Exception catch (_) {
-      // TODO(Question): При быстром удалении нескольких заметок обработка ошибки возращает неактуальные данные.
-      // Например при быстром удалении 5 заменток и возникновении обибки на 3 заметке
-      // на экране останется 3, 4 и 5 заметка, не смотря на то, что в репозитории
-      // осталась только 3 заметка
-      _noteListState.content(previousData);
+      final newActualData = (_noteListState.value?.data ?? [])
+        ..add(deletingNote)
+        ..sort((a, b) => (a.startDateTime ?? DateTime.now())
+            .compareTo(b.startDateTime ?? DateTime.now()));
+      _noteListState.content(newActualData);
     }
   }
 
@@ -132,7 +130,9 @@ class NoteListScreenWidgetModel
     try {
       await model.addNote(newNote);
     } on Exception catch (_) {
-      _noteListState.content(previousData ?? []);
+      final newActualData = (_noteListState.value?.data ?? [newNote])
+        ..remove(newNote);
+      _noteListState.content(newActualData);
     }
   }
 
