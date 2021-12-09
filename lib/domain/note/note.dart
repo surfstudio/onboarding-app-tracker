@@ -1,53 +1,34 @@
-/// Note model.
-class Note {
-  final String id;
-  final String title;
-  final DateTime? startDateTime;
-  final DateTime? endDateTime;
+import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  Duration? get noteDuration =>
-      startDateTime == null ? null : endDateTime?.difference(startDateTime!);
+part 'note.freezed.dart';
 
-  Note({
-    required this.id,
-    required this.title,
-    required this.startDateTime,
-    this.endDateTime,
-  });
+@freezed
+class Note with _$Note {
+  factory Note({
+    required String id,
+    required String title,
+    required int startTimestamp,
+    int? endTimestamp,
+  }) = _Note;
 
-  Note.fromJson(Map<String, dynamic> json)
-      : id = json['id'].toString(),
-        title = json['title'].toString(),
-        startDateTime = json['startTimestamp'] == null
-            ? null
-            : DateTime.fromMicrosecondsSinceEpoch(
-                (json['startTimestamp'] as int) * 1000,
-              ),
-        endDateTime = json['endTimestamp'] == null
-            ? null
-            : DateTime.fromMicrosecondsSinceEpoch(
-                (json['endTimestamp'] as int) * 1000,
-              );
+  const Note._();
 
-  Note copyWith({
-    String? id,
-    String? title,
-    DateTime? startDateTime,
-    DateTime? endDateTime,
-  }) =>
-      Note(
-        id: id ?? this.id,
-        title: title ?? this.title,
-        startDateTime: startDateTime ?? this.startDateTime,
-        endDateTime: endDateTime ?? this.endDateTime,
+  DateTime? startDateTime() => DateTime.fromMicrosecondsSinceEpoch(
+        (startTimestamp as int) * 1000,
       );
 
-  Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'id': id,
-      'title': title,
-      'startTimestamp': startDateTime?.millisecondsSinceEpoch,
-      'endTimestamp': endDateTime?.millisecondsSinceEpoch,
-    };
+  DateTime? endDateTime() {
+    if (endTimestamp != null) {
+      return DateTime.fromMicrosecondsSinceEpoch(
+        (endTimestamp as int) * 1000,
+      );
+    }
+  }
+
+  Duration? noteDuration() {
+    if (endTimestamp != null) {
+      return startDateTime()?.difference(endDateTime() ?? DateTime.now());
+    }
   }
 }

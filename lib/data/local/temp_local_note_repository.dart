@@ -56,6 +56,12 @@ class TempLocalNoteRepository implements INoteRepository {
     return _noteList;
   }
 
+  @override
+  Future<void> finishNote(int endTimestamp) {
+    // TODO(vasbaza): implement finishNote
+    throw UnimplementedError();
+  }
+
   int _getIndexById(String noteId) {
     return _noteList.indexWhere((note) => note.id == noteId);
   }
@@ -66,9 +72,11 @@ class TempLocalNoteRepository implements INoteRepository {
     }
   }
 
-  int _sortByStartDateTimeCallback(Note a, Note b) =>
-      (a.startDateTime ?? DateTime.now())
-          .compareTo(b.startDateTime ?? DateTime.now());
+  int _sortByStartDateTimeCallback(Note a, Note b) {
+    final startTimeNoteA = a.startDateTime() ?? DateTime.now();
+    final startTimeNoteB = b.startDateTime() ?? DateTime.now();
+    return startTimeNoteA.compareTo(startTimeNoteB);
+  }
 }
 
 /// Класс используется для отлидки
@@ -76,31 +84,31 @@ class _NetworkBehaviourImitation {
   final List<Note> _mockData = [
     Note(
       title: 'Созвон',
-      startDateTime: DateTime(2021, 12, 2, 9),
-      endDateTime: DateTime(2021, 12, 2, 10),
+      startTimestamp: DateTime(2021, 12, 2, 9).microsecondsSinceEpoch,
+      endTimestamp: DateTime(2021, 12, 2, 10).microsecondsSinceEpoch,
       id: '0',
     ),
     Note(
       title: 'Прогаю',
-      startDateTime: DateTime(2021, 12, 2, 10),
-      endDateTime: DateTime(2021, 12, 2, 13),
+      startTimestamp: DateTime(2021, 12, 2, 10).microsecondsSinceEpoch,
+      endTimestamp: DateTime(2021, 12, 2, 13).microsecondsSinceEpoch,
       id: '1',
     ),
     Note(
       title: 'Обед',
-      startDateTime: DateTime(2021, 12, 2, 13),
-      endDateTime: DateTime(2021, 12, 2, 14),
+      startTimestamp: DateTime(2021, 12, 2, 13).microsecondsSinceEpoch,
+      endTimestamp: DateTime(2021, 12, 2, 14).microsecondsSinceEpoch,
       id: '2',
     ),
     Note(
       title: 'Прогаю',
-      startDateTime: DateTime(2021, 12, 2, 14),
-      endDateTime: DateTime(2021, 12, 2, 18, 15),
+      startTimestamp: DateTime(2021, 12, 2, 14).microsecondsSinceEpoch,
+      endTimestamp: DateTime(2021, 12, 2, 18, 15).microsecondsSinceEpoch,
       id: '3',
     ),
     Note(
       title: 'Списываю время',
-      startDateTime: DateTime(2021, 12, 2, 18, 15),
+      startTimestamp: DateTime(2021, 12, 2, 18, 15).microsecondsSinceEpoch,
       id: '4',
     ),
   ];

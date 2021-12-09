@@ -11,7 +11,16 @@ class CloudFirestoreNoteRepository implements INoteRepository {
 
   @override
   Future<void> addNote(Note note) async {
-    await _noteList.add(note.toJson());
+    await _noteList.add(<String, dynamic>{
+      'title': note.title, // John Doe
+    });
+  }
+
+  @override
+  Future<void> finishNote(int endTimestamp) async {
+    final data = await _noteList.orderBy('startTimestamp').get();
+    final doc = data.docs.last;
+    await _noteList.doc(doc.id).update({'endTimestamp': endTimestamp});
   }
 
   @override
@@ -35,22 +44,25 @@ class CloudFirestoreNoteRepository implements INoteRepository {
   }
 
   @override
-  Future<void> editNote({
-    required String noteId,
-    required Note newNoteData,
-  }) async {
-    final docId = await _getDocPathByNoteId(noteId);
-    await _noteList.doc(docId).update(newNoteData.toJson());
+  Future<List<Note>> loadAllNotes() async {
+    final notes = <Note>[];
+    final data = await _noteList.orderBy('startTimestamp').get();
+    for (final doc in data.docs) {
+      final note = Note(
+        id: doc.id,
+        title: doc.data()['title'] as String,
+        startTimestamp: doc.data()['startTimestamp'] as int,
+        endTimestamp: doc.data()['endTimestamp'] as int?,
+      );
+      notes.add(note);
+    }
+    return notes;
   }
 
   @override
-  Future<List<Note>> loadAllNotes() async {
-    final data = await _noteList.orderBy('startTimestamp').get();
-    return data.docs.map((e) => Note.fromJson(e.data())).toList();
-  }
-
-  Future<String> _getDocPathByNoteId(String noteId) async {
-    return (await _getDocByNoteId(noteId)).id;
+  Future<void> editNote({required String noteId, required Note newNoteData}) {
+    // TODO: implement editNote
+    throw UnimplementedError();
   }
 
   Future<QueryDocumentSnapshot<Map<String, dynamic>>> _getDocByNoteId(

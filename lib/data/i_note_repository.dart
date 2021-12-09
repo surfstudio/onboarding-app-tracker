@@ -4,6 +4,8 @@ abstract class INoteRepository {
   /// Return all notes
   Future<List<Note>> loadAllNotes();
 
+  Future<void> finishNote(int endTimestamp);
+
   /// Add a new note
   Future<void> addNote(Note note);
 

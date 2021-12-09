@@ -8,7 +8,6 @@ import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen_model.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/widgets/input_note_dialog.dart';
 import 'package:time_tracker/ui/widgets/snackbar/snack_bars.dart';
-import 'package:uuid/uuid.dart';
 
 part 'i_note_list_widget_model.dart';
 
@@ -102,7 +101,6 @@ class NoteListScreenWidgetModel
   Future<void> _showAddNoteDialog(Note? lastNote) => showDialog<void>(
         context: context,
         builder: (context) {
-          const uuid = Uuid();
           String? title;
 
           void onChanged(String s) => title = s;
@@ -112,8 +110,8 @@ class NoteListScreenWidgetModel
               return;
             }
             final newNote = Note(
-              startDateTime: DateTime.now(),
-              id: uuid.v1(),
+              startTimestamp: DateTime.now().millisecondsSinceEpoch,
+              id: 'default',
               title: title!,
             );
             unawaited(_addNoteOptimistic(newNote));
@@ -122,7 +120,9 @@ class NoteListScreenWidgetModel
             }
             unawaited(_editNoteOptimistic(
               lastNote.id,
-              lastNote.copyWith(endDateTime: DateTime.now()),
+              lastNote.copyWith(
+                endTimestamp: DateTime.now().microsecondsSinceEpoch,
+              ),
             ));
             Navigator.pop(context);
           }
@@ -137,6 +137,9 @@ class NoteListScreenWidgetModel
       ..sort(_sortByStartDateTimeCallback);
     _noteListState.content(optimisticData);
     try {
+      await model.finishNote(
+        newNote.startTimestamp ?? DateTime.now().millisecondsSinceEpoch,
+      );
       await model.addNote(newNote);
     } on Exception catch (_) {
       final newActualData = (_noteListState.value?.data ?? [newNote])
@@ -177,7 +180,10 @@ class NoteListScreenWidgetModel
     }
   }
 
-  int _sortByStartDateTimeCallback(Note a, Note b) =>
-      (a.startDateTime ?? DateTime.now())
-          .compareTo(b.startDateTime ?? DateTime.now());
+  int _sortByStartDateTimeCallback(Note a, Note b) {
+    final startTimeNoteA = a.startDateTime() ?? DateTime.now();
+    final startTimeNoteB = b.startDateTime() ?? DateTime.now();
+
+    return startTimeNoteA.compareTo(startTimeNoteB);
+  }
 }

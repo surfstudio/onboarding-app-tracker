@@ -30,6 +30,15 @@ class NoteListScreenModel extends ElementaryModel {
     }
   }
 
+  Future<void> finishNote(int endTimestamp) async {
+    try {
+      await _noteRepository.finishNote(endTimestamp);
+    } on Exception catch (e) {
+      handleError(e);
+      rethrow;
+    }
+  }
+
   Future<void> moveNoteToTrash(String noteId) async {
     try {
       await _noteRepository.moveNoteToTrash(noteId);
