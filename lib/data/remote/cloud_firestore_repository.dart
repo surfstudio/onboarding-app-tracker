@@ -16,7 +16,7 @@ class CloudFirestoreNoteRepository implements INoteRepository {
     await _noteList.add(<String, dynamic>{
       'title': note.title,
       'startTimestamp': note.startTimestamp,
-      'endTimestamp': null,
+      'endTimestamp': note.endTimestamp,
     });
   }
 

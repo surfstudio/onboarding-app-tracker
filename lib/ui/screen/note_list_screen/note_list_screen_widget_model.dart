@@ -84,10 +84,11 @@ class NoteListScreenWidgetModel
       _noteListState.content(newState);
     }
     if (noteToDelete != null) {
+      await model.deleteNote(noteToDelete);
       final shouldDelete = await showCancelDeleteSnackBar(noteToDelete);
       if (shouldDelete) {
-        await model.deleteNote(noteToDelete);
       } else {
+        await _addNote(noteToDelete);
         _noteListState.value?.data?.add(noteToDelete);
         final newState = _noteListState.value?.data
           ?..sort(_sortByStartDateTimeCallback);
@@ -133,7 +134,7 @@ class NoteListScreenWidgetModel
               title: title!,
             );
             Navigator.pop(context);
-            _addNote(newNote);
+            _addNoteAndFinishTheLastNote(newNote);
           }
 
           return InputNoteDialog(onChanged: onChanged, onSubmit: onSubmit);
@@ -149,13 +150,18 @@ class NoteListScreenWidgetModel
   }
 
   // ToDo(vasbaza): грязная функция
+  Future<void> _addNoteAndFinishTheLastNote(Note newNote) async {
+    await _finishNote(newNote);
+    await _addNote(newNote);
+  }
+
   Future<void> _addNote(Note newNote) async {
     _noteListState.value?.data?.add(newNote);
     final optimisticData = _noteListState.value?.data
       ?..sort(_sortByStartDateTimeCallback);
     _noteListState.content(optimisticData!);
     try {
-      await _finishNote(newNote);
+      // await _finishNote(newNote);
       await model.addNote(newNote);
     } on Exception catch (_) {
       final newActualData = (_noteListState.value?.data ?? [newNote])
