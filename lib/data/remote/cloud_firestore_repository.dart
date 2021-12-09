@@ -10,9 +10,15 @@ class CloudFirestoreNoteRepository implements INoteRepository {
       FirebaseFirestore.instance.collection('deleted_note_list');
 
   @override
+  Stream<QuerySnapshot> get noteStream =>
+      FirebaseFirestore.instance.collection('note_list').snapshots();
+
+  @override
   Future<void> addNote(Note note) async {
     await _noteList.add(<String, dynamic>{
-      'title': note.title, // John Doe
+      'title': note.title,
+      'startTimestamp': note.startTimestamp,
+      'endTimestamp': null,
     });
   }
 
@@ -47,15 +53,7 @@ class CloudFirestoreNoteRepository implements INoteRepository {
   Future<List<Note>> loadAllNotes() async {
     final notes = <Note>[];
     final data = await _noteList.orderBy('startTimestamp').get();
-    for (final doc in data.docs) {
-      final note = Note(
-        id: doc.id,
-        title: doc.data()['title'] as String,
-        startTimestamp: doc.data()['startTimestamp'] as int,
-        endTimestamp: doc.data()['endTimestamp'] as int?,
-      );
-      notes.add(note);
-    }
+    data.docs.map((doc) => Note.fromDatabase(doc)).toList();
     return notes;
   }
 

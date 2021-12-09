@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:time_tracker/data/i_note_repository.dart';
 import 'package:time_tracker/domain/note/note.dart';
 
@@ -77,6 +78,10 @@ class TempLocalNoteRepository implements INoteRepository {
     final startTimeNoteB = b.startDateTime() ?? DateTime.now();
     return startTimeNoteA.compareTo(startTimeNoteB);
   }
+
+  @override
+  // TODO: implement noteStream
+  Stream<QuerySnapshot> get noteStream => throw UnimplementedError();
 }
 
 /// Класс используется для отлидки

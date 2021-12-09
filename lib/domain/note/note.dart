@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -14,8 +15,18 @@ class Note with _$Note {
 
   const Note._();
 
+  factory Note.fromDatabase(QueryDocumentSnapshot document) {
+    final data = document.data() as Map<String, dynamic>?;
+    return Note(
+      id: document.id,
+      title: data?['title'] as String,
+      startTimestamp: data?['startTimestamp'] as int,
+      endTimestamp: data?['endTimestamp'] as int?,
+    );
+  }
+
   DateTime? startDateTime() => DateTime.fromMicrosecondsSinceEpoch(
-        (startTimestamp as int) * 1000,
+        startTimestamp * 1000,
       );
 
   DateTime? endDateTime() {
@@ -28,7 +39,7 @@ class Note with _$Note {
 
   Duration? noteDuration() {
     if (endTimestamp != null) {
-      return startDateTime()?.difference(endDateTime() ?? DateTime.now());
+      return endDateTime()?.difference(startDateTime() ?? DateTime.now());
     }
   }
 }

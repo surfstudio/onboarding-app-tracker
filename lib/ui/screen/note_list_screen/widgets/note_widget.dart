@@ -17,7 +17,10 @@ class NoteWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final noteDuration = note.noteDuration();
+    Duration? noteDuration;
+    if (note.endTimestamp != null) {
+      noteDuration = note.noteDuration();
+    }
     return Card(
       elevation: 20,
       shadowColor: AppColors.shadowColor,

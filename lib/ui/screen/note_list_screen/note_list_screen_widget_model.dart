@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,8 +24,8 @@ NoteListScreenWidgetModel noteListScreenWidgetModelFactory(
 class NoteListScreenWidgetModel
     extends WidgetModel<NoteListScreen, NoteListScreenModel>
     implements INoteListWidgetModel {
+  late final StreamSubscription noteStreamSubscription;
   final _noteListState = EntityStateNotifier<List<Note>>();
-
   final ScrollController _listScrollController = ScrollController();
 
   @override
@@ -39,7 +40,17 @@ class NoteListScreenWidgetModel
   @override
   void initWidgetModel() {
     super.initWidgetModel();
-    loadAllNotes();
+    noteStreamSubscription = model.noteStream.listen((QuerySnapshot snapshot) {
+      final docs = snapshot.docs;
+      final notes = docs.map((doc) => Note.fromDatabase(doc)).toList();
+      _noteListState.content(notes);
+    });
+  }
+  
+  @override
+  void dispose() {
+    noteStreamSubscription.cancel();
+    super.dispose();
   }
 
   @override
@@ -105,7 +116,7 @@ class NoteListScreenWidgetModel
 
           void onChanged(String s) => title = s;
 
-          Future<void> onSubmit() async {
+          void onSubmit() {
             if (title == null) {
               return;
             }
@@ -114,32 +125,28 @@ class NoteListScreenWidgetModel
               id: 'default',
               title: title!,
             );
-            unawaited(_addNoteOptimistic(newNote));
-            if (lastNote == null || lastNote.endDateTime != null) {
-              return;
-            }
-            unawaited(_editNoteOptimistic(
-              lastNote.id,
-              lastNote.copyWith(
-                endTimestamp: DateTime.now().microsecondsSinceEpoch,
-              ),
-            ));
             Navigator.pop(context);
+            _addNote(newNote);
+            _finishNote(newNote);
           }
 
           return InputNoteDialog(onChanged: onChanged, onSubmit: onSubmit);
         },
       );
 
-  Future<void> _addNoteOptimistic(Note newNote) async {
-    final previousData = _noteListState.value?.data;
-    final optimisticData = <Note>[...previousData ?? [], newNote]
-      ..sort(_sortByStartDateTimeCallback);
-    _noteListState.content(optimisticData);
-    try {
+  Future<void> _finishNote(Note newNote) async {
+    if ((_noteListState.value?.data?.length ?? 0) > 1) {
       await model.finishNote(
-        newNote.startTimestamp ?? DateTime.now().millisecondsSinceEpoch,
+        newNote.startTimestamp,
       );
+    }
+  }
+
+  Future<void> _addNote(Note newNote) async {
+    _noteListState.value?.data?.add(newNote);
+    final optimisticData = _noteListState.value?.data;
+    _noteListState.content(optimisticData!);
+    try {
       await model.addNote(newNote);
     } on Exception catch (_) {
       final newActualData = (_noteListState.value?.data ?? [newNote])
@@ -159,24 +166,6 @@ class NoteListScreenWidgetModel
       final newActualData = (_noteListState.value?.data ?? [deletedNote])
         ..remove(deletedNote);
       _noteListState.content(newActualData);
-    }
-  }
-
-  Future<void> _editNoteOptimistic(String noteId, Note newNoteData) async {
-    final previousData = _noteListState.value?.data;
-    final index = (previousData ?? []).indexWhere((e) => e.id == noteId);
-    if (index == -1) {
-      return;
-    }
-    final optimisticData = <Note>[...previousData ?? []]..[index] = newNoteData;
-    _noteListState.content(optimisticData);
-    try {
-      await model.editNote(
-        noteId: noteId,
-        newNoteData: newNoteData,
-      );
-    } on Exception catch (_) {
-      _noteListState.content(previousData ?? []);
     }
   }
 
