@@ -34,10 +34,9 @@ class CloudFirestoreNoteRepository implements INoteRepository {
 
   @override
   Future<List<Note>> loadAllNotes() async {
-    final notes = <Note>[];
     final data = await _noteList.orderBy('startTimestamp').get();
-    data.docs.map((doc) => Note.fromDatabase(doc)).toList();
-    return notes;
+    await Future<void>.delayed(const Duration(seconds: 2));
+    return data.docs.map((doc) => Note.fromDatabase(doc)).toList();
   }
 
   @override

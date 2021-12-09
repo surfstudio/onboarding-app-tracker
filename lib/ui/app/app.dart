@@ -23,8 +23,19 @@ class App extends StatelessWidget {
           elevation: 0,
           centerTitle: false,
         ),
+        inputDecorationTheme: const InputDecorationTheme(
+          focusColor: AppColors.primary,
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: AppColors.primary,
+            ),
+          ),
+        ),
         primaryColor: Colors.blue,
         fontFamily: 'Roboto',
+        textSelectionTheme: const TextSelectionThemeData(
+          cursorColor: AppColors.primary,
+        ),
       ),
       home: const NoteListScreen(),
     );
