@@ -4,7 +4,7 @@ import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:time_tracker/domain/note.dart';
-import 'package:time_tracker/res/theme/app_edge_insets.dart';
+import 'package:time_tracker/ui/screen/note_list_screen/components/input_note_dialog.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen_model.dart';
 import 'package:time_tracker/utils/snack_bars.dart';
@@ -28,6 +28,10 @@ class NoteListScreenWidgetModel
 
   @override
   ListenableState<EntityState<List<Note>>> get noteListState => _noteListState;
+
+  final ScrollController _listScrollController = ScrollController();
+
+  ScrollController get listScrollController => _listScrollController;
 
   NoteListScreenWidgetModel(
     NoteListScreenModel model,
@@ -59,62 +63,103 @@ class NoteListScreenWidgetModel
   }
 
   @override
-  Future<void> deleteNote(int index) async {
+  Future<Note?> moveNoteToTrash(int index) async {
     final previousData = _noteListState.value?.data;
     if (previousData == null) {
-      return;
+      return null;
     }
     final deletingNote = previousData.elementAt(index);
     final optimisticData = [...previousData]..remove(deletingNote);
     _noteListState.content(optimisticData);
-    final isConfirm = await _getConfirmFromSnackBar();
-    if (!isConfirm) {
-      _noteListState.content(previousData);
-      return;
-    }
     try {
-      await model.deleteNote(deletingNote.id);
-      // TODO(Question): Отрабатывает криво если удалять сразу несколько заметок
-      // _noteListState.content(resultList);
-    } catch (_) {
-      // TODO(Question): При быстром удалении нескольких заметок обработка ошибки возращает неактуальные данные.
-      // Например при быстром удалении 5 заменток и возникновении обибки на 3 заметке
-      // на экране останется 3, 4 и 5 заметка, не смотря на то, что в репозитории
-      // осталась только 3 заметка
-      _noteListState.content(previousData);
+      await model.moveNoteToTrash(deletingNote.id);
+      return deletingNote;
+    } on Exception catch (_) {
+      final newActualData = (_noteListState.value?.data ?? [])
+        ..add(deletingNote)
+        ..sort(_sortByStartDateTimeCallback);
+      _noteListState.content(newActualData);
+      return null;
     }
   }
 
   @override
-  Future<void> addNoteWithDialogAndUpdateLastNote() async {
-    final previousData = _noteListState.value?.data;
-    final lastNote = (previousData ?? []).isEmpty ? null : previousData?.last;
-    final newNote = await _getNoteByDialog();
-    if (newNote == null) {
-      return;
-    }
-    unawaited(_addNote(newNote));
-    if (lastNote == null || lastNote.endDateTime != null) {
-      return;
-    }
-    unawaited(_editNote(
-      lastNote.id,
-      lastNote.copyWith(endDateTime: DateTime.now()),
-    ));
+  Future<void> showCancelDeleteSnackBar(Note deletedNote) async {
+    hideCurrentSnackBar();
+    await showRevertSnackBar(
+      title: 'Заметка ${deletedNote.title} удалена',
+      onRevert: () async => _restoreNoteOptimistic(deletedNote),
+    )?.closed;
   }
 
-  Future<void> _addNote(Note newNote) async {
+  @override
+  Future<void> showAddNoteDialog() async {
     final previousData = _noteListState.value?.data;
-    final optimisticData = <Note>[...previousData ?? [], newNote];
+    final lastNote = (previousData ?? []).isEmpty ? null : previousData?.last;
+    await _showAddNoteDialog(lastNote);
+  }
+
+  Future<void> _showAddNoteDialog(Note? lastNote) => showDialog<void>(
+        context: context,
+        builder: (context) {
+          const uuid = Uuid();
+          String? title;
+
+          void onChanged(String s) => title = s;
+
+          Future<void> onSubmit() async {
+            if (title == null) {
+              return;
+            }
+            final newNote = Note(
+              startDateTime: DateTime.now(),
+              id: uuid.v1(),
+              title: title!,
+            );
+            unawaited(_addNoteOptimistic(newNote));
+            if (lastNote == null || lastNote.endDateTime != null) {
+              return;
+            }
+            unawaited(_editNoteOptimistic(
+              lastNote.id,
+              lastNote.copyWith(endDateTime: DateTime.now()),
+            ));
+            Navigator.pop(context);
+          }
+
+          return InputNoteDialog(onChanged: onChanged, onSubmit: onSubmit);
+        },
+      );
+
+  Future<void> _addNoteOptimistic(Note newNote) async {
+    final previousData = _noteListState.value?.data;
+    final optimisticData = <Note>[...previousData ?? [], newNote]
+      ..sort(_sortByStartDateTimeCallback);
     _noteListState.content(optimisticData);
     try {
       await model.addNote(newNote);
-    } catch (_) {
-      _noteListState.content(previousData ?? []);
+    } on Exception catch (_) {
+      final newActualData = (_noteListState.value?.data ?? [newNote])
+        ..remove(newNote);
+      _noteListState.content(newActualData);
     }
   }
 
-  Future<void> _editNote(String noteId, Note newNoteData) async {
+  Future<void> _restoreNoteOptimistic(Note deletedNote) async {
+    final previousData = _noteListState.value?.data;
+    final optimisticData = <Note>[...previousData ?? [], deletedNote]
+      ..sort(_sortByStartDateTimeCallback);
+    _noteListState.content(optimisticData);
+    try {
+      await model.restoreNote(deletedNote.id);
+    } on Exception catch (_) {
+      final newActualData = (_noteListState.value?.data ?? [deletedNote])
+        ..remove(deletedNote);
+      _noteListState.content(newActualData);
+    }
+  }
+
+  Future<void> _editNoteOptimistic(String noteId, Note newNoteData) async {
     final previousData = _noteListState.value?.data;
     final index = (previousData ?? []).indexWhere((e) => e.id == noteId);
     if (index == -1) {
@@ -127,55 +172,12 @@ class NoteListScreenWidgetModel
         noteId: noteId,
         newNoteData: newNoteData,
       );
-    } catch (_) {
+    } on Exception catch (_) {
       _noteListState.content(previousData ?? []);
     }
   }
 
-  Future<bool> _getConfirmFromSnackBar() async {
-    var isConfirm = true;
-    hideCurrentSnackBar();
-    await showRevertSnackBar(
-      onRevert: (isReverted) => isConfirm = !isReverted,
-    )?.closed;
-    return isConfirm;
-  }
-
-  Future<Note?> _getNoteByDialog() => showDialog<Note?>(
-        context: context,
-        builder: (context) {
-          const uuid = Uuid();
-          String? title;
-          // TODO(Zemcov): техдолг. Вынести в библиотеку виджетов
-          return SimpleDialog(
-            contentPadding: AppEdgeInsets.b10h20,
-            title: const Text('Ввидите название задачи'),
-            children: [
-              TextFormField(
-                onChanged: (s) => title = s,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(
-                        context,
-                        title == null
-                            ? null
-                            : Note(
-                                startDateTime: DateTime.now(),
-                                id: uuid.v1(),
-                                title: title!,
-                              ),
-                      );
-                    },
-                    child: const Text('Ввести'),
-                  ),
-                ],
-              ),
-            ],
-          );
-        },
-      );
+  int _sortByStartDateTimeCallback(Note a, Note b) =>
+      (a.startDateTime ?? DateTime.now())
+          .compareTo(b.startDateTime ?? DateTime.now());
 }

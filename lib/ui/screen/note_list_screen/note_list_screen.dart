@@ -30,14 +30,22 @@ class NoteListScreen extends ElementaryWidget<INoteListWidgetModel> {
         errorBuilder: (_, __, ___) => const LoadingErrorWidget(),
         builder: (_, notes) => RefreshIndicator(
           onRefresh: wm.loadAllNotes,
-          child: NoteList(
-            notes: notes,
-            onDismissed: wm.deleteNote,
+          child: SafeArea(
+            top: false,
+            child: NoteList(
+              notes: notes,
+              onDismissed: (index) async {
+                final deletedNote = await wm.moveNoteToTrash(index);
+                if (deletedNote != null) {
+                  await wm.showCancelDeleteSnackBar(deletedNote);
+                }
+              },
+            ),
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: wm.addNoteWithDialogAndUpdateLastNote,
+        onPressed: wm.showAddNoteDialog,
         child: const Icon(Icons.add),
       ),
     );

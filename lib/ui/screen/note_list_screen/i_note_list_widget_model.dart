@@ -6,7 +6,9 @@ abstract class INoteListWidgetModel extends IWidgetModel {
 
   Future<void> loadAllNotes();
 
-  void addNoteWithDialogAndUpdateLastNote();
+  Future<Note?> moveNoteToTrash(int index);
 
-  void deleteNote(int index);
+  Future<void> showCancelDeleteSnackBar(Note deletedNote);
+
+  Future<void> showAddNoteDialog();
 }

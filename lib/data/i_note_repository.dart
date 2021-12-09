@@ -8,7 +8,9 @@ abstract class INoteRepository {
   Future<void> addNote(Note note);
 
   /// Delete note by id
-  Future<void> deleteNote(String noteId);
+  Future<void> moveNoteToTrash(String noteId);
+
+  Future<void> restoreNote(String noteId);
 
   /// Edit note data by id
   Future<void> editNote({

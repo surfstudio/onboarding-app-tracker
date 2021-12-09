@@ -7,11 +7,13 @@ import 'package:time_tracker/ui/screen/note_list_screen/components/note_widget.d
 class NoteList extends StatelessWidget {
   final List<Note>? notes;
   final void Function(int index) onDismissed;
+  final ScrollController? controller;
 
   const NoteList({
     required this.notes,
     required this.onDismissed,
     Key? key,
+    this.controller,
   }) : super(key: key);
 
   @override
@@ -21,6 +23,7 @@ class NoteList extends StatelessWidget {
       return const EmptyListWidget();
     }
     return ListView.separated(
+      controller: controller,
       padding: AppEdgeInsets.v20,
       itemBuilder: (_, index) => Dismissible(
         key: ValueKey<String>(notes.elementAt(index).id),
