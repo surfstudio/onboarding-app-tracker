@@ -37,13 +37,14 @@ class _AppDependenciesState extends State<AppDependencies> {
     _noteRepository = NoteRepository();
     _tagRepository = TagRepository();
 
-    _noteListScreenModel = NoteListScreenModel(
-      _noteRepository,
+    _tagListScreenModel = TagListScreenModel(
+      _tagRepository,
       _defaultErrorHandler,
     );
 
-    _tagListScreenModel = TagListScreenModel(
-      _tagRepository,
+    _noteListScreenModel = NoteListScreenModel(
+      _noteRepository,
+      _tagListScreenModel,
       _defaultErrorHandler,
     );
 

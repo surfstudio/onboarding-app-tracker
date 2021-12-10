@@ -42,7 +42,7 @@ class Note with _$Note implements Comparable<Note> {
     return Note(
       id: document.id,
       title: data?['title'] as String,
-      tag: data?['tag'] as Tag,
+      tag: data?['tag'] as Tag?,
       startTimestamp: data?['startTimestamp'] as int,
       endTimestamp: data?['endTimestamp'] as int?,
     );

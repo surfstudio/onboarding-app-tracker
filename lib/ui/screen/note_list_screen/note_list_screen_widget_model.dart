@@ -25,7 +25,8 @@ NoteListScreenWidgetModel noteListScreenWidgetModelFactory(
 class NoteListScreenWidgetModel
     extends WidgetModel<NoteListScreen, NoteListScreenModel>
     implements INoteListWidgetModel {
-  late final StreamSubscription noteStreamSubscription;
+  late final StreamSubscription rawNoteStreamSubscription;
+  late final StreamSubscription rawTagStreamSubscription;
   final _noteListState = EntityStateNotifier<List<Note>>();
   final _listScrollController = ScrollController();
 
@@ -41,12 +42,15 @@ class NoteListScreenWidgetModel
   @override
   void initWidgetModel() {
     super.initWidgetModel();
-    noteStreamSubscription = model.noteStream.listen(_noteStreamListener);
+    rawNoteStreamSubscription = model.rawNoteStream.listen(_noteStreamListener);
+    rawTagStreamSubscription =
+        model.rawTagStream.stream.listen(_tagStreamListener);
   }
 
   @override
   void dispose() {
-    noteStreamSubscription.cancel();
+    rawNoteStreamSubscription.cancel();
+    rawTagStreamSubscription.cancel();
     super.dispose();
   }
 
@@ -102,6 +106,16 @@ class NoteListScreenWidgetModel
   }
 
   @override
+  void onChooseTag() {
+    // TODO(Bazarova): implement onChooseTag
+  }
+
+  @override
+  void onTapDropDownTags() {
+    // TODO(Bazarova): implement onTapDropDownTags
+  }
+
+  @override
   Future<bool> showCancelDeleteSnackBar(Note deletedNote) async {
     var shouldDelete = true;
 
@@ -151,6 +165,8 @@ class NoteListScreenWidgetModel
       ..sort();
     _noteListState.content(notes);
   }
+
+  void _tagStreamListener(QuerySnapshot snapshot) {}
 
   Future<void> _finishNote(Note newNote) async {
     final notesCount = _noteListState.value?.data?.length ?? 0;
