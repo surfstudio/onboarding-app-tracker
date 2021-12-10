@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:time_tracker/domain/tag/tag.dart';
 
 part 'note.freezed.dart';
 
@@ -31,6 +32,7 @@ class Note with _$Note implements Comparable<Note> {
     required String title,
     required int startTimestamp,
     int? endTimestamp,
+    Tag? tag,
   }) = _Note;
 
   const Note._();
@@ -40,6 +42,7 @@ class Note with _$Note implements Comparable<Note> {
     return Note(
       id: document.id,
       title: data?['title'] as String,
+      tag: data?['tag'] as Tag,
       startTimestamp: data?['startTimestamp'] as int,
       endTimestamp: data?['endTimestamp'] as int?,
     );

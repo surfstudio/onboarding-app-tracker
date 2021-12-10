@@ -14,6 +14,7 @@ class NoteRepository implements INoteRepository {
   Future<void> addNote(Note note) async {
     await _noteList.add(<String, dynamic>{
       'title': note.title,
+      'tag': note.tag,
       'startTimestamp': note.startTimestamp,
       'endTimestamp': note.endTimestamp,
     });
