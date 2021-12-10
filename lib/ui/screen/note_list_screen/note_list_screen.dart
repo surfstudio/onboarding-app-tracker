@@ -1,11 +1,11 @@
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
-import 'package:time_tracker/domain/note.dart';
-import 'package:time_tracker/res/theme/app_typography.dart';
-import 'package:time_tracker/ui/screen/components/loading_error_widget.dart';
-import 'package:time_tracker/ui/screen/components/loading_widget.dart';
-import 'package:time_tracker/ui/screen/note_list_screen/components/note_list.dart';
+import 'package:time_tracker/domain/note/note.dart';
+import 'package:time_tracker/ui/res/app_typography.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen_widget_model.dart';
+import 'package:time_tracker/ui/screen/note_list_screen/widgets/note_list.dart';
+import 'package:time_tracker/ui/widgets/loading/loading_error_widget.dart';
+import 'package:time_tracker/ui/widgets/loading/loading_widget.dart';
 
 /// Widget screen with list of notes.
 class NoteListScreen extends ElementaryWidget<INoteListWidgetModel> {

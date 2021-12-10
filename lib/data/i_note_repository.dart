@@ -1,4 +1,4 @@
-import 'package:time_tracker/domain/note.dart';
+import 'package:time_tracker/domain/note/note.dart';
 
 abstract class INoteRepository {
   /// Return all notes

@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:time_tracker/res/theme/app_colors.dart';
+import 'package:time_tracker/ui/res/app_colors.dart';
 
 const defaultFontFamily = 'Roboto';
 

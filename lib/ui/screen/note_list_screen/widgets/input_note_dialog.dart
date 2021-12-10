@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:time_tracker/res/theme/app_edge_insets.dart';
+import 'package:time_tracker/ui/res/app_edge_insets.dart';
 
 class InputNoteDialog extends StatelessWidget {
   final void Function(String s) onChanged;
