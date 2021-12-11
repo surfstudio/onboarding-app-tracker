@@ -5,8 +5,10 @@ import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:time_tracker/domain/note/note.dart';
+import 'package:time_tracker/domain/tag/tag.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen_model.dart';
+import 'package:time_tracker/ui/screen/note_list_screen/widgets/note_input_field.dart';
 import 'package:time_tracker/ui/screen/tag_screen/tag_list_screen.dart';
 import 'package:time_tracker/ui/widgets/dialog/input_dialog.dart';
 import 'package:time_tracker/ui/widgets/snackbar/snack_bars.dart';
@@ -134,6 +136,7 @@ class NoteListScreenWidgetModel
         context: context,
         builder: (context) {
           String? title;
+          Tag? tag;
 
           void onChanged(String inputText) => title = inputText;
 
@@ -143,14 +146,29 @@ class NoteListScreenWidgetModel
                 startTimestamp: DateTime.now().millisecondsSinceEpoch,
                 id: 'default',
                 title: title!,
+                tag: tag,
               );
               Navigator.pop(context);
               _addNoteAndFinishTheLastNote(newNote);
             }
           }
 
+          Function(Tag) onChooseTag() => (Tag chosenTag) {
+                tag = chosenTag;
+              };
+
+          // print(tag);
+
+          final tags = model.rawTagStream.value.docs
+              .map((rawTag) => Tag.fromDatabase(rawTag))
+              .toList();
+
           return InputDialog(
-            onChanged: onChanged,
+            inputField: NoteInputField(
+              onChanged: onChanged,
+              tagList: tags,
+              onChooseTag: onChooseTag(),
+            ),
             onSubmit: onSubmit,
             title: 'Введите название задачи',
             submitButtonText: 'Ввести',
@@ -170,7 +188,7 @@ class NoteListScreenWidgetModel
 
   Future<void> _finishNote(Note newNote) async {
     final notesCount = _noteListState.value?.data?.length ?? 0;
-    if (notesCount > 1) {
+    if (notesCount >= 1) {
       await model.finishNote(
         newNote.startTimestamp,
       );

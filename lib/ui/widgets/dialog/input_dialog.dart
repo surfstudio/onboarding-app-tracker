@@ -3,13 +3,13 @@ import 'package:time_tracker/ui/res/app_colors.dart';
 import 'package:time_tracker/ui/res/app_edge_insets.dart';
 
 class InputDialog extends StatelessWidget {
-  final void Function(String s) onChanged;
+  final Widget inputField;
   final VoidCallback onSubmit;
   final String? title;
   final String? submitButtonText;
 
   const InputDialog({
-    required this.onChanged,
+    required this.inputField,
     required this.onSubmit,
     this.title,
     this.submitButtonText,
@@ -22,9 +22,7 @@ class InputDialog extends StatelessWidget {
       contentPadding: AppEdgeInsets.b10h20,
       title: Text(title ?? ''),
       children: [
-        TextFormField(
-          onChanged: onChanged,
-        ),
+        inputField,
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [

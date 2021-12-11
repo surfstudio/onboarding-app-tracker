@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:time_tracker/domain/tag/tag.dart';
 import 'package:time_tracker/ui/screen/tag_screen/tag_list_screen.dart';
 import 'package:time_tracker/ui/screen/tag_screen/tag_list_screen_model.dart';
+import 'package:time_tracker/ui/screen/tag_screen/widgets/tag_input_field.dart';
 import 'package:time_tracker/ui/screen/tag_screen/widgets/tag_list.dart';
 import 'package:time_tracker/ui/widgets/dialog/input_dialog.dart';
 import 'package:time_tracker/ui/widgets/empty_list/empty_list.dart';
@@ -81,7 +82,10 @@ class TagListScreenWidgetModel
           }
 
           return InputDialog(
-            onChanged: onChanged,
+            inputField: TagInputField(
+              onChanged: onChanged,
+            ),
+            // onChanged: onChanged,
             onSubmit: onSubmit,
             title: 'Придумайте тег',
             submitButtonText: 'Подтвердить',

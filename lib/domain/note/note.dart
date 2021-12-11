@@ -38,13 +38,17 @@ class Note with _$Note implements Comparable<Note> {
   const Note._();
 
   factory Note.fromDatabase(QueryDocumentSnapshot document) {
-    final data = document.data() as Map<String, dynamic>?;
+    final rawNote = document.data() as Map<String, dynamic>?;
+    final rawTag = rawNote?['tag'] as Map<String, dynamic>?;
     return Note(
       id: document.id,
-      title: data?['title'] as String,
-      tag: data?['tag'] as Tag?,
-      startTimestamp: data?['startTimestamp'] as int,
-      endTimestamp: data?['endTimestamp'] as int?,
+      title: rawNote?['title'] as String,
+      tag: Tag(
+        title: (rawTag?['title'] ?? '') as String,
+        id: (rawTag?['id'] ?? '') as String,
+      ),
+      startTimestamp: rawNote?['startTimestamp'] as int,
+      endTimestamp: rawNote?['endTimestamp'] as int?,
     );
   }
 
