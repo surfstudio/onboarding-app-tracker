@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:time_tracker/data/i_note_repository.dart';
 import 'package:time_tracker/domain/note/note.dart';
 
-class CloudFirestoreNoteRepository implements INoteRepository {
+class NoteRepository implements INoteRepository {
   final _noteList = FirebaseFirestore.instance.collection('note_list');
 
   @override

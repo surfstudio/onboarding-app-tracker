@@ -11,4 +11,6 @@ abstract class INoteListWidgetModel extends IWidgetModel {
   Future<void> showCancelDeleteSnackBar(Note deletedNote);
 
   Future<void> showAddNoteDialog();
+
+  void onTapTags();
 }

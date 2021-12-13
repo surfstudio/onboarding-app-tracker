@@ -7,7 +7,8 @@ import 'package:provider/provider.dart';
 import 'package:time_tracker/domain/note/note.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen_model.dart';
-import 'package:time_tracker/ui/screen/note_list_screen/widgets/input_note_dialog.dart';
+import 'package:time_tracker/ui/screen/tag_screen/tag_list_screen.dart';
+import 'package:time_tracker/ui/widgets/dialog/input_dialog.dart';
 import 'package:time_tracker/ui/widgets/snackbar/snack_bars.dart';
 
 part 'i_note_list_widget_model.dart';
@@ -93,6 +94,14 @@ class NoteListScreenWidgetModel
   }
 
   @override
+  void onTapTags() {
+    Navigator.push(
+      context,
+      MaterialPageRoute<void>(builder: (context) => const TagListScreen()),
+    );
+  }
+
+  @override
   Future<bool> showCancelDeleteSnackBar(Note deletedNote) async {
     var shouldDelete = true;
 
@@ -126,7 +135,12 @@ class NoteListScreenWidgetModel
             }
           }
 
-          return InputNoteDialog(onChanged: onChanged, onSubmit: onSubmit);
+          return InputDialog(
+            onChanged: onChanged,
+            onSubmit: onSubmit,
+            title: 'Введите название задачи',
+            submitButtonText: 'Ввести',
+          );
         },
       );
 

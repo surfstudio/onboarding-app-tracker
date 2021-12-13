@@ -37,6 +37,7 @@ class App extends StatelessWidget {
           cursorColor: AppColors.primary,
         ),
       ),
+      // home: const TagListScreen(),
       home: const NoteListScreen(),
     );
   }

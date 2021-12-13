@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:time_tracker/domain/note/note.dart';
 import 'package:time_tracker/ui/res/app_edge_insets.dart';
-import 'package:time_tracker/ui/screen/note_list_screen/widgets/empty_list_widget.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/widgets/note_widget.dart';
+import 'package:time_tracker/ui/widgets/empty_list/empty_list.dart';
 
 class NoteList extends StatelessWidget {
   final List<Note>? notes;
@@ -20,7 +20,7 @@ class NoteList extends StatelessWidget {
   Widget build(BuildContext context) {
     final notes = this.notes;
     if (notes == null || notes.isEmpty) {
-      return const EmptyListWidget();
+      return const EmptyList();
     }
     return ListView.separated(
       controller: controller,

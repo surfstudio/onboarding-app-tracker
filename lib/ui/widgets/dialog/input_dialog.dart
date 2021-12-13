@@ -2,12 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:time_tracker/ui/res/app_colors.dart';
 import 'package:time_tracker/ui/res/app_edge_insets.dart';
 
-class InputNoteDialog extends StatelessWidget {
+class InputDialog extends StatelessWidget {
   final void Function(String s) onChanged;
   final VoidCallback onSubmit;
-  const InputNoteDialog({
+  final String? title;
+  final String? submitButtonText;
+
+  const InputDialog({
     required this.onChanged,
     required this.onSubmit,
+    this.title,
+    this.submitButtonText,
     Key? key,
   }) : super(key: key);
 
@@ -15,7 +20,7 @@ class InputNoteDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return SimpleDialog(
       contentPadding: AppEdgeInsets.b10h20,
-      title: const Text('Ввидите название задачи'),
+      title: Text(title ?? ''),
       children: [
         TextFormField(
           onChanged: onChanged,
@@ -28,7 +33,7 @@ class InputNoteDialog extends StatelessWidget {
                 primary: AppColors.black,
               ),
               onPressed: onSubmit,
-              child: const Text('Ввести'),
+              child: Text(submitButtonText ?? 'Подтвердить'),
             ),
           ],
         ),

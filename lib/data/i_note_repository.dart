@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:time_tracker/domain/note/note.dart';
 
 abstract class INoteRepository {
+  /// Real-time changes in notes stream
   Stream<QuerySnapshot> get noteStream;
 
   /// Return all notes
