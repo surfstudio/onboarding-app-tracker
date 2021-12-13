@@ -24,8 +24,11 @@ class TagList extends StatelessWidget {
           secondaryBackground: const DismissibleBackground(
             alignment: Alignment.centerRight,
           ),
-          child: TagWidget(
-            tag: tags.elementAt(index),
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: TagWidget(
+              tag: tags.elementAt(index),
+            ),
           ),
         );
     Widget separatorBuilder(BuildContext context, int i) => const Divider();

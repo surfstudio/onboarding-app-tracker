@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:time_tracker/domain/tag/tag.dart';
+import 'package:time_tracker/ui/res/app_typography.dart';
 
 class TagWidget extends StatelessWidget {
   final Tag tag;
@@ -12,26 +13,26 @@ class TagWidget extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(50),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Row(
-          children: [
-            Text(tag.title),
-            const SizedBox(
-              width: 5,
+      child: Row(
+        children: [
+          Text(
+            tag.title,
+            style: AppTypography.cardTitle,
+          ),
+          const SizedBox(
+            width: 5,
+          ),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Color(tag.color),
             ),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Color(tag.color),
-              ),
-              child: const SizedBox(
-                width: 10,
-                height: 10,
-              ),
+            child: const SizedBox(
+              width: 10,
+              height: 10,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

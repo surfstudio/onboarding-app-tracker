@@ -4,6 +4,7 @@ import 'package:time_tracker/ui/res/app_colors.dart';
 import 'package:time_tracker/ui/res/app_edge_insets.dart';
 import 'package:time_tracker/ui/res/app_typography.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/widgets/duration_widget.dart';
+import 'package:time_tracker/ui/screen/tag_screen/widgets/tag_widget.dart';
 
 class NoteWidget extends StatelessWidget {
   final Note note;
@@ -17,6 +18,7 @@ class NoteWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tag = note.tag;
     return Card(
       elevation: 20,
       shadowColor: AppColors.shadowColor,
@@ -30,10 +32,13 @@ class NoteWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              note.title,
-              style: AppTypography.cardTitle,
-            ),
+            if (tag != null)
+              TagWidget(tag: tag)
+            else
+              Text(
+                note.title,
+                style: AppTypography.cardTitle,
+              ),
             const SizedBox(
               height: 5,
             ),
