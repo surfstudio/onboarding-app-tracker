@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:time_tracker/domain/tag/tag.dart';
-import 'package:time_tracker/ui/res/app_typography.dart';
 
 class TagWidget extends StatelessWidget {
   final Tag tag;
@@ -17,7 +16,6 @@ class TagWidget extends StatelessWidget {
         children: [
           Text(
             tag.title,
-            style: AppTypography.cardTitle,
           ),
           const SizedBox(
             width: 5,

@@ -10,14 +10,20 @@ class DrawerContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final children = [
-      const DrawerHeader(
-        decoration: BoxDecoration(
+      DrawerHeader(
+        decoration: const BoxDecoration(
           color: AppColors.background,
         ),
-        child: Text('Time Tracker App'),
+        child: Text(
+          'Tracker',
+          style: wm.subtitleStyle1,
+        ),
       ),
       ListTile(
-        title: const Text('Tags'),
+        title: Text(
+          'Tags',
+          style: wm.subtitleStyle2,
+        ),
         onTap: wm.onTapTags,
       ),
     ];

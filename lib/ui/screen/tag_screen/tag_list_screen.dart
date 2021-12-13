@@ -1,7 +1,6 @@
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:time_tracker/domain/tag/tag.dart';
-import 'package:time_tracker/ui/res/app_typography.dart';
 import 'package:time_tracker/ui/screen/tag_screen/tag_list_screen_widget_model.dart';
 
 class TagListScreen extends ElementaryWidget<ITagListWidgetModel> {
@@ -16,7 +15,6 @@ class TagListScreen extends ElementaryWidget<ITagListWidgetModel> {
       appBar: AppBar(
         title: const Text(
           'Tags',
-          style: AppTypography.screenTitle,
         ),
       ),
       body: EntityStateNotifierBuilder<List<Tag>>(

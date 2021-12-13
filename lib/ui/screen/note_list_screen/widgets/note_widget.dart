@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:time_tracker/domain/note/note.dart';
 import 'package:time_tracker/ui/res/app_colors.dart';
 import 'package:time_tracker/ui/res/app_edge_insets.dart';
-import 'package:time_tracker/ui/res/app_typography.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/widgets/duration_widget.dart';
 import 'package:time_tracker/ui/screen/tag_screen/widgets/tag_widget.dart';
 
@@ -39,7 +38,6 @@ class NoteWidget extends StatelessWidget {
                   else
                     Text(
                       note.title,
-                      style: AppTypography.cardTitle,
                     ),
                   const SizedBox(
                     height: 5,
@@ -49,7 +47,6 @@ class NoteWidget extends StatelessWidget {
                   else
                     const Text(
                       'в процессе...',
-                      style: AppTypography.cardStatusInProgress,
                     ),
                 ],
               ),

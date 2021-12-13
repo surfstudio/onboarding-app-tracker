@@ -16,10 +16,16 @@ class AppColors {
   static const Color primaryGreen2 = Color(0xFF33B063);
   static const Color primaryGreen3 = Color(0xFF95DEB0);
 
-  static const Iterable<Color> noteDuration = [
-    Color(0xffF1B317),
-    Color(0xffF05716),
-    Color(0xff5F454B),
+  static const Iterable<Color> noteDurationLight = [
+    Color(0xff018786),
+    Color(0xff064994),
+    Color(0xff6200ee),
+  ];
+
+  static const Iterable<Color> noteDurationDark = [
+    Color(0xff02FAE1),
+    Color(0xff0ACBF2),
+    Color(0xffbb86fc),
   ];
 
   /// Primary colors

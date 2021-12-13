@@ -31,12 +31,15 @@ class NoteListScreenWidgetModel
   late final StreamSubscription rawNoteStreamSubscription;
   late final StreamSubscription rawTagStreamSubscription;
   final _noteListState = EntityStateNotifier<List<Note>>();
-  final _listScrollController = ScrollController();
 
   @override
   ListenableState<EntityState<List<Note>>> get noteListState => _noteListState;
 
-  ScrollController get listScrollController => _listScrollController;
+  @override
+  TextStyle? get subtitleStyle1 => Theme.of(context).textTheme.subtitle1;
+
+  @override
+  TextStyle? get subtitleStyle2 => Theme.of(context).textTheme.subtitle2;
 
   NoteListScreenWidgetModel(
     NoteListScreenModel model,
