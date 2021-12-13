@@ -43,6 +43,7 @@ class NoteListScreen extends ElementaryWidget<INoteListWidgetModel> {
               onDismissed: (index) async {
                 await wm.moveNoteToTrash(index);
               },
+              onTapEdit: wm.showEditNoteDialog,
             ),
           ),
         ),

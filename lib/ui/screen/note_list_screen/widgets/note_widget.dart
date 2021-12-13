@@ -19,37 +19,42 @@ class NoteWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tag = note.tag;
-    return Card(
-      elevation: 20,
-      shadowColor: AppColors.shadowColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(15)),
-      ),
-      margin: margin,
-      child: Container(
-        width: double.infinity,
-        padding: AppEdgeInsets.all20,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (tag != null)
-              TagWidget(tag: tag)
-            else
-              Text(
-                note.title,
-                style: AppTypography.cardTitle,
+    return Expanded(
+      child: Card(
+        elevation: 20,
+        shadowColor: AppColors.shadowColor,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(15)),
+        ),
+        margin: margin,
+        child: Container(
+          padding: AppEdgeInsets.all20,
+          child: Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (tag != null)
+                    TagWidget(tag: tag)
+                  else
+                    Text(
+                      note.title,
+                      style: AppTypography.cardTitle,
+                    ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  if (note.isFinished)
+                    DurationWidget(noteDuration: note.noteDuration)
+                  else
+                    const Text(
+                      'в процессе...',
+                      style: AppTypography.cardStatusInProgress,
+                    ),
+                ],
               ),
-            const SizedBox(
-              height: 5,
-            ),
-            if (note.isFinished)
-              DurationWidget(noteDuration: note.noteDuration)
-            else
-              const Text(
-                'в процессе...',
-                style: AppTypography.cardStatusInProgress,
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );

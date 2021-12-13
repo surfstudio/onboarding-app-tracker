@@ -7,11 +7,13 @@ import 'package:time_tracker/ui/widgets/empty_list/empty_list.dart';
 class NoteList extends StatelessWidget {
   final List<Note>? notes;
   final void Function(int index) onDismissed;
+  final void Function(Note noteToEdiit) onTapEdit;
   final ScrollController? controller;
 
   const NoteList({
     required this.notes,
     required this.onDismissed,
+    required this.onTapEdit,
     Key? key,
     this.controller,
   }) : super(key: key);
@@ -32,8 +34,17 @@ class NoteList extends StatelessWidget {
         secondaryBackground: const DismissibleBackground(
           alignment: Alignment.centerRight,
         ),
-        child: NoteWidget(
-          note: notes.elementAt(index),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            NoteWidget(
+              note: notes.elementAt(index),
+            ),
+            IconButton(
+              onPressed: () => onTapEdit(notes[index]),
+              icon: const Icon(Icons.create),
+            ),
+          ],
         ),
       ),
       itemCount: notes.length,

@@ -161,6 +161,44 @@ class NoteListScreenWidgetModel
         },
       );
 
+  @override
+  Future<void> showEditNoteDialog(Note noteToEdit) async => showDialog<void>(
+        context: context,
+        builder: (context) {
+          String? title;
+          Tag? tag;
+
+          void onSubmit() {
+            if (title != null && title != '' && title != noteToEdit.title) {
+              final newNoteData = <String, dynamic>{
+                'title': title,
+                'tag': tag?.toJson(),
+              };
+              _editNote(noteToEdit, newNoteData);
+              Navigator.pop(context);
+            }
+          }
+
+          void onChanged(String inputText) => title = inputText;
+          void onChooseTag(Tag chosenTag) => tag = chosenTag;
+          void onSelectedTag(Tag tag) => onChooseTag(tag);
+
+          final tags = model.rawTagSubject.value.docs
+              .map((rawTag) => Tag.fromDatabase(rawTag))
+              .toList();
+
+          return InputDialog(
+            inputField: NoteInputField(
+              onSelected: onSelectedTag,
+              tagList: tags,
+              onChanged: onChanged,
+            ),
+            onSubmit: onSubmit,
+            submitButtonText: 'Ввести',
+          );
+        },
+      );
+
   void _noteStreamListener(QuerySnapshot snapshot) {
     final notes = snapshot.docs
         .map((rawNote) => Note.fromDatabase(rawNote))
@@ -212,6 +250,20 @@ class NoteListScreenWidgetModel
       final currentState = (_noteListState.value?.data ?? [newNote])
         ..remove(newNote);
       _noteListState.content(currentState);
+    }
+  }
+
+  Future<void> _editNote(
+    Note noteToEdit,
+    Map<String, dynamic> newNoteData,
+  ) async {
+    final index = _noteListState.value?.data?.indexOf(noteToEdit);
+    if (index != null) {
+      try {
+        await model.editNote(noteId: noteToEdit.id, newNoteData: newNoteData);
+      } on FirebaseException catch (_) {
+        throw Exception('Cannot edit note');
+      }
     }
   }
 
