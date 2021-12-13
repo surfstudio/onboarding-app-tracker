@@ -8,6 +8,7 @@ class Tag with _$Tag {
   factory Tag({
     required String id,
     required String title,
+    @Default(4282557941) int color,
   }) = _Tag;
 
   factory Tag.fromDatabase(QueryDocumentSnapshot document) {
