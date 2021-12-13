@@ -18,24 +18,27 @@ class InputDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SimpleDialog(
-      contentPadding: AppEdgeInsets.b10h20,
-      title: Text(title ?? ''),
-      children: [
-        inputField,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            TextButton(
-              style: TextButton.styleFrom(
-                primary: AppColors.black,
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minWidth: 310),
+      child: SimpleDialog(
+        contentPadding: AppEdgeInsets.b10h20,
+        title: Text(title ?? ''),
+        children: [
+          inputField,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(
+                style: TextButton.styleFrom(
+                  primary: AppColors.black,
+                ),
+                onPressed: onSubmit,
+                child: Text(submitButtonText ?? 'Подтвердить'),
               ),
-              onPressed: onSubmit,
-              child: Text(submitButtonText ?? 'Подтвердить'),
-            ),
-          ],
-        ),
-      ],
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
