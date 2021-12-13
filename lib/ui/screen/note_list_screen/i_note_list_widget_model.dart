@@ -13,8 +13,4 @@ abstract class INoteListWidgetModel extends IWidgetModel {
   Future<void> showAddNoteDialog();
 
   void onTapTags();
-
-  void onTapDropDownTags();
-
-  void onChooseTag();
 }

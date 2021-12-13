@@ -108,16 +108,6 @@ class NoteListScreenWidgetModel
   }
 
   @override
-  void onChooseTag() {
-    // TODO(Bazarova): implement onChooseTag
-  }
-
-  @override
-  void onTapDropDownTags() {
-    // TODO(Bazarova): implement onTapDropDownTags
-  }
-
-  @override
   Future<bool> showCancelDeleteSnackBar(Note deletedNote) async {
     var shouldDelete = true;
 
@@ -138,8 +128,6 @@ class NoteListScreenWidgetModel
           String? title;
           Tag? tag;
 
-          void onChanged(String inputText) => title = inputText;
-
           void onSubmit() {
             if (title != null) {
               final newNote = Note(
@@ -153,11 +141,9 @@ class NoteListScreenWidgetModel
             }
           }
 
-          Function(Tag) onChooseTag() => (Tag chosenTag) {
-                tag = chosenTag;
-              };
-
-          // print(tag);
+          void onChanged(String inputText) => title = inputText;
+          void onChooseTag(Tag chosenTag) => tag = chosenTag;
+          void onSelectedTag(Tag tag) => onChooseTag(tag);
 
           final tags = model.rawTagStream.value.docs
               .map((rawTag) => Tag.fromDatabase(rawTag))
@@ -165,9 +151,9 @@ class NoteListScreenWidgetModel
 
           return InputDialog(
             inputField: NoteInputField(
-              onChanged: onChanged,
+              onSelected: onSelectedTag,
               tagList: tags,
-              onChooseTag: onChooseTag(),
+              onChanged: onChanged,
             ),
             onSubmit: onSubmit,
             title: 'Введите название задачи',

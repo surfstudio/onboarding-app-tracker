@@ -55,6 +55,6 @@ class Note with _$Note implements Comparable<Note> {
   @override
   int compareTo(Note other) {
     final otherStartTime = other.startDateTime;
-    return startDateTime.compareTo(otherStartTime);
+    return otherStartTime.compareTo(startDateTime);
   }
 }

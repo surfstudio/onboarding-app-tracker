@@ -3,14 +3,12 @@ import 'package:time_tracker/domain/tag/tag.dart';
 
 class NoteInputField extends StatelessWidget {
   final List<Tag>? tagList;
-  final Function(Tag tag) onChooseTag;
-  final void Function(String s) onChanged;
+  final void Function(Tag tag) onSelected;
+  final void Function(String input) onChanged;
 
-  final _controller = TextEditingController();
-
-  NoteInputField({
+  const NoteInputField({
     required this.onChanged,
-    required this.onChooseTag,
+    required this.onSelected,
     this.tagList,
     Key? key,
   }) : super(key: key);
@@ -19,7 +17,7 @@ class NoteInputField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Autocomplete<Tag>(
       displayStringForOption: _displayStringForOption,
-      optionsViewBuilder: (context, onSelected, Iterable<Tag> options) {
+      optionsViewBuilder: (context, onSelected, options) {
         return Align(
           alignment: Alignment.topLeft,
           child: Material(
@@ -45,6 +43,7 @@ class NoteInputField extends StatelessWidget {
         );
       },
       optionsBuilder: (textEditingValue) {
+        onChanged(textEditingValue.text);
         return tagList!.where((option) {
           return option
               .toString()
@@ -53,13 +52,6 @@ class NoteInputField extends StatelessWidget {
       },
       onSelected: onSelected,
     );
-  }
-
-  // ToDo(Bazarova): перенести во вью модель
-  void onSelected(Tag tag) {
-    _controller.text = tag.title;
-    onChanged(_controller.text);
-    onChooseTag(tag);
   }
 
   static String _displayStringForOption(Tag option) => option.title;
