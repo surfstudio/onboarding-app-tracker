@@ -1,12 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:time_tracker/data/i_note_repository.dart';
 import 'package:time_tracker/domain/note/note.dart';
 
 class TempLocalNoteRepository implements INoteRepository {
   final _noteList = <Note>[];
-  final _deletedNoteList = <Note>[];
 
   final _NetworkBehaviourImitation _networkImitation =
       _NetworkBehaviourImitation();
+
+  @override
+  // TODO(Bazarova): implement noteStream
+  Stream<QuerySnapshot> get noteStream => throw UnimplementedError();
 
   TempLocalNoteRepository() {
     _noteList.addAll(_networkImitation._mockData);
@@ -26,24 +30,7 @@ class TempLocalNoteRepository implements INoteRepository {
   }
 
   @override
-  Future<void> moveNoteToTrash(String noteId) async {
-    await _networkImitation.addDuration();
-    _networkImitation.addException(howOften: 3);
-    _checkElementInList(noteId);
-    final deletedNote = _noteList.firstWhere((note) => note.id == noteId);
-    _deletedNoteList.add(deletedNote);
-    _noteList.remove(deletedNote);
-  }
-
-  @override
-  Future<void> restoreNote(String noteId) async {
-    await _networkImitation.addDuration();
-    _networkImitation.addException(howOften: 3);
-    _checkElementInList(noteId);
-    final deletedNote = _noteList.firstWhere((note) => note.id == noteId);
-    _noteList.add(deletedNote);
-    _deletedNoteList.remove(deletedNote);
-  }
+  Future<void> deleteNote(Note note) async {}
 
   @override
   Future<List<Note>> editNote({
@@ -56,6 +43,12 @@ class TempLocalNoteRepository implements INoteRepository {
     return _noteList;
   }
 
+  @override
+  Future<void> finishNote(int endTimestamp) {
+    // TODO(Bazarova): implement finishNote
+    throw UnimplementedError();
+  }
+
   int _getIndexById(String noteId) {
     return _noteList.indexWhere((note) => note.id == noteId);
   }
@@ -66,9 +59,11 @@ class TempLocalNoteRepository implements INoteRepository {
     }
   }
 
-  int _sortByStartDateTimeCallback(Note a, Note b) =>
-      (a.startDateTime ?? DateTime.now())
-          .compareTo(b.startDateTime ?? DateTime.now());
+  int _sortByStartDateTimeCallback(Note a, Note b) {
+    final startTimeNoteA = a.startDateTime;
+    final startTimeNoteB = b.startDateTime;
+    return startTimeNoteA.compareTo(startTimeNoteB);
+  }
 }
 
 /// Класс используется для отлидки
@@ -76,31 +71,31 @@ class _NetworkBehaviourImitation {
   final List<Note> _mockData = [
     Note(
       title: 'Созвон',
-      startDateTime: DateTime(2021, 12, 2, 9),
-      endDateTime: DateTime(2021, 12, 2, 10),
+      startTimestamp: DateTime(2021, 12, 2, 9).microsecondsSinceEpoch,
+      endTimestamp: DateTime(2021, 12, 2, 10).microsecondsSinceEpoch,
       id: '0',
     ),
     Note(
       title: 'Прогаю',
-      startDateTime: DateTime(2021, 12, 2, 10),
-      endDateTime: DateTime(2021, 12, 2, 13),
+      startTimestamp: DateTime(2021, 12, 2, 10).microsecondsSinceEpoch,
+      endTimestamp: DateTime(2021, 12, 2, 13).microsecondsSinceEpoch,
       id: '1',
     ),
     Note(
       title: 'Обед',
-      startDateTime: DateTime(2021, 12, 2, 13),
-      endDateTime: DateTime(2021, 12, 2, 14),
+      startTimestamp: DateTime(2021, 12, 2, 13).microsecondsSinceEpoch,
+      endTimestamp: DateTime(2021, 12, 2, 14).microsecondsSinceEpoch,
       id: '2',
     ),
     Note(
       title: 'Прогаю',
-      startDateTime: DateTime(2021, 12, 2, 14),
-      endDateTime: DateTime(2021, 12, 2, 18, 15),
+      startTimestamp: DateTime(2021, 12, 2, 14).microsecondsSinceEpoch,
+      endTimestamp: DateTime(2021, 12, 2, 18, 15).microsecondsSinceEpoch,
       id: '3',
     ),
     Note(
       title: 'Списываю время',
-      startDateTime: DateTime(2021, 12, 2, 18, 15),
+      startTimestamp: DateTime(2021, 12, 2, 18, 15).microsecondsSinceEpoch,
       id: '4',
     ),
   ];

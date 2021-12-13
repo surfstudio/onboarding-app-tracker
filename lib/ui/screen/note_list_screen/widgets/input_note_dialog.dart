@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:time_tracker/ui/res/app_colors.dart';
 import 'package:time_tracker/ui/res/app_edge_insets.dart';
 
 class InputNoteDialog extends StatelessWidget {
@@ -23,6 +24,9 @@ class InputNoteDialog extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             TextButton(
+              style: TextButton.styleFrom(
+                primary: AppColors.black,
+              ),
               onPressed: onSubmit,
               child: const Text('Ввести'),
             ),

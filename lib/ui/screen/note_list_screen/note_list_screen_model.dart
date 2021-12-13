@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elementary/elementary.dart';
 import 'package:time_tracker/data/i_note_repository.dart';
 import 'package:time_tracker/domain/note/note.dart';
@@ -5,12 +6,15 @@ import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen.dart';
 
 /// Model for [NoteListScreen]
 class NoteListScreenModel extends ElementaryModel {
+  late final Stream<QuerySnapshot> noteStream;
   final INoteRepository _noteRepository;
 
   NoteListScreenModel(
     this._noteRepository,
     ErrorHandler errorHandler,
-  ) : super(errorHandler: errorHandler);
+  ) : super(errorHandler: errorHandler) {
+    noteStream = _noteRepository.noteStream;
+  }
 
   Future<List<Note>> loadAllNotes() async {
     try {
@@ -30,18 +34,18 @@ class NoteListScreenModel extends ElementaryModel {
     }
   }
 
-  Future<void> moveNoteToTrash(String noteId) async {
+  Future<void> finishNote(int endTimestamp) async {
     try {
-      await _noteRepository.moveNoteToTrash(noteId);
+      await _noteRepository.finishNote(endTimestamp);
     } on Exception catch (e) {
       handleError(e);
       rethrow;
     }
   }
 
-  Future<void> restoreNote(String noteId) async {
+  Future<void> deleteNote(Note note) async {
     try {
-      await _noteRepository.restoreNote(noteId);
+      await _noteRepository.deleteNote(note);
     } on Exception catch (e) {
       handleError(e);
       rethrow;

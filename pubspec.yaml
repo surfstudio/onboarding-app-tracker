@@ -14,12 +14,13 @@ dependencies:
   firebase_core: ^1.10.3
   flutter:
     sdk: flutter
+  freezed: ^1.0.2+1
   intl: ^0.17.0
   provider: ^6.0.0
-  uuid: ^3.0.5
 
 dev_dependencies:
   # тестирование elementary
+  build_runner: ^2.1.5
   elementary_test: ^0.1.2
   flutter_test:
     sdk: flutter

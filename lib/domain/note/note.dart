@@ -1,53 +1,53 @@
-/// Note model.
-class Note {
-  final String id;
-  final String title;
-  final DateTime? startDateTime;
-  final DateTime? endDateTime;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  Duration? get noteDuration =>
-      startDateTime == null ? null : endDateTime?.difference(startDateTime!);
+part 'note.freezed.dart';
 
-  Note({
-    required this.id,
-    required this.title,
-    required this.startDateTime,
-    this.endDateTime,
-  });
-
-  Note.fromJson(Map<String, dynamic> json)
-      : id = json['id'].toString(),
-        title = json['title'].toString(),
-        startDateTime = json['startTimestamp'] == null
-            ? null
-            : DateTime.fromMicrosecondsSinceEpoch(
-                (json['startTimestamp'] as int) * 1000,
-              ),
-        endDateTime = json['endTimestamp'] == null
-            ? null
-            : DateTime.fromMicrosecondsSinceEpoch(
-                (json['endTimestamp'] as int) * 1000,
-              );
-
-  Note copyWith({
-    String? id,
-    String? title,
-    DateTime? startDateTime,
-    DateTime? endDateTime,
-  }) =>
-      Note(
-        id: id ?? this.id,
-        title: title ?? this.title,
-        startDateTime: startDateTime ?? this.startDateTime,
-        endDateTime: endDateTime ?? this.endDateTime,
+@freezed
+class Note with _$Note implements Comparable<Note> {
+  DateTime get startDateTime => DateTime.fromMicrosecondsSinceEpoch(
+        startTimestamp * 1000,
       );
 
-  Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'id': id,
-      'title': title,
-      'startTimestamp': startDateTime?.millisecondsSinceEpoch,
-      'endTimestamp': endDateTime?.millisecondsSinceEpoch,
-    };
+  DateTime? get endDateTime {
+    if (endTimestamp != null) {
+      return DateTime.fromMicrosecondsSinceEpoch(
+        (endTimestamp as int) * 1000,
+      );
+    }
+  }
+
+  Duration get noteDuration {
+    final resolvedEndTimestamp = endDateTime ?? DateTime.now();
+
+    return resolvedEndTimestamp.difference(startDateTime);
+  }
+
+  bool get isFinished => endTimestamp != null;
+
+  factory Note({
+    required String id,
+    required String title,
+    required int startTimestamp,
+    int? endTimestamp,
+  }) = _Note;
+
+  const Note._();
+
+  factory Note.fromDatabase(QueryDocumentSnapshot document) {
+    final data = document.data() as Map<String, dynamic>?;
+    return Note(
+      id: document.id,
+      title: data?['title'] as String,
+      startTimestamp: data?['startTimestamp'] as int,
+      endTimestamp: data?['endTimestamp'] as int?,
+    );
+  }
+
+  @override
+  int compareTo(Note other) {
+    final otherStartTime = other.startDateTime;
+    return startDateTime.compareTo(otherStartTime);
   }
 }

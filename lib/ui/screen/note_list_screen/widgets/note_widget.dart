@@ -37,8 +37,8 @@ class NoteWidget extends StatelessWidget {
             const SizedBox(
               height: 5,
             ),
-            if (note.noteDuration != null)
-              DurationWidget(noteDuration: note.noteDuration!)
+            if (note.isFinished)
+              DurationWidget(noteDuration: note.noteDuration)
             else
               const Text(
                 'в процессе...',
@@ -50,18 +50,3 @@ class NoteWidget extends StatelessWidget {
     );
   }
 }
-//
-// class SinceFromWidget extends StatelessWidget {
-//   final DateTime startDateTime;
-//   const SinceFromWidget({
-//     Key? key, requared this.startDateTime,
-//   }) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Text(
-//       (note.startDateTime?.millisecondsSinceEpoch).toString(),
-//       style: AppTypography.cardStatusInProgress,
-//     );
-//   }
-// }

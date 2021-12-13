@@ -37,7 +37,7 @@ class NoteList extends StatelessWidget {
         ),
       ),
       itemCount: notes.length,
-      separatorBuilder: (context, i) => const SizedBox(height: 10),
+      separatorBuilder: (_, __) => const SizedBox(height: 10),
     );
   }
 }
