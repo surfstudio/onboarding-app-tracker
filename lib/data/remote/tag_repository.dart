@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:time_tracker/data/i_tag_repository.dart';
 import 'package:time_tracker/domain/tag/tag.dart';
@@ -9,6 +11,12 @@ class TagRepository implements ITagRepository {
   Stream<QuerySnapshot<Object?>> get tagStream => _tagList.snapshots();
 
   @override
+  StreamController<Tag> get updatedTagStream => StreamController<Tag>();
+
+  @override
+  StreamController<Tag> get deletedTagStream => StreamController<Tag>();
+
+  @override
   Future<void> addTag(Tag tag) async {
     await _tagList.add(<String, dynamic>{
       'title': tag.title,
@@ -16,8 +24,8 @@ class TagRepository implements ITagRepository {
   }
 
   @override
-  Future<void> deleteTag(String tagId) async {
-    await _tagList.doc(tagId).delete();
+  Future<void> deleteTag(Tag tagToDelete) async {
+    await _tagList.doc(tagToDelete.id).delete();
   }
 
   @override
@@ -27,5 +35,11 @@ class TagRepository implements ITagRepository {
   }
 
   @override
-  Future<void> editTag(String tagId) async {}
+  Future<void> updateTag(Tag updatedTag) async {
+    await _tagList.doc(updatedTag.id).update(
+      <String, dynamic>{
+        'title': updatedTag.title,
+      },
+    );
+  }
 }

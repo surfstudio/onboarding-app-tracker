@@ -56,7 +56,11 @@ class TagListScreenWidgetModel
   Widget tagList() {
     final tags = _tagListState.value?.data;
     if (tags != null && tags.isNotEmpty) {
-      return TagList(tags: tags, onDismissed: onTagDismissed);
+      return TagList(
+        tags: tags,
+        onDismissed: onTagDismissed,
+        onTapEdit: showEditDialog,
+      );
     } else {
       return const EmptyList();
     }
@@ -69,7 +73,6 @@ class TagListScreenWidgetModel
           String? title;
 
           void onChanged(String inputText) => title = inputText;
-
           void onSubmit() {
             if (title != null) {
               final newTag = Tag(
@@ -94,6 +97,30 @@ class TagListScreenWidgetModel
       );
 
   @override
+  Future<void> showEditDialog(Tag tagToEdit) async => showDialog<void>(
+        context: context,
+        builder: (context) {
+          String? title;
+
+          void onChanged(String inputText) => title = inputText;
+          void onSubmit() {
+            if (title != null && title != '' && title != tagToEdit.title) {
+              Navigator.pop(context);
+              _editTag(tagToEdit, title!);
+            }
+          }
+
+          return InputDialog(
+            inputField: TagInputField(
+              onChanged: onChanged,
+            ),
+            onSubmit: onSubmit,
+            submitButtonText: 'Подтвердить',
+          );
+        },
+      );
+
+  @override
   Future<void> onTagDismissed(int index) async {
     final tagToDelete = _tagListState.value?.data?.elementAt(index);
     if (tagToDelete != null) {
@@ -111,11 +138,25 @@ class TagListScreenWidgetModel
     }
   }
 
+  Future<void> _editTag(Tag tagToEdit, String newTitle) async {
+    final index = _tagListState.value?.data?.indexOf(tagToEdit);
+    if (index != null) {
+      final editedTag = tagToEdit.copyWith(title: newTitle);
+      _tagListState.value?.data?[index] = editedTag;
+      _updateState(_tagListState.value?.data);
+      try {
+        await model.updateTag(editedTag);
+      } on FirebaseException catch (_) {
+        throw Exception('Cannot add new tag');
+      }
+    }
+  }
+
   Future<void> _deleteTag(Tag tagToDelete) async {
     _tagListState.value?.data?.remove(tagToDelete);
     _updateState(_tagListState.value?.data);
     try {
-      await model.deleteTag(tagToDelete.id);
+      await model.deleteTag(tagToDelete);
     } on FirebaseException catch (_) {
       throw Exception('Cannot delete tag');
     }

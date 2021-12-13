@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/src/iterable_extensions.dart';
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -44,9 +45,7 @@ class NoteListScreenWidgetModel
   @override
   void initWidgetModel() {
     super.initWidgetModel();
-    rawNoteStreamSubscription = model.rawNoteStream.listen(_noteStreamListener);
-    rawTagStreamSubscription =
-        model.rawTagStream.stream.listen(_tagStreamListener);
+    _initState();
   }
 
   @override
@@ -145,7 +144,7 @@ class NoteListScreenWidgetModel
           void onChooseTag(Tag chosenTag) => tag = chosenTag;
           void onSelectedTag(Tag tag) => onChooseTag(tag);
 
-          final tags = model.rawTagStream.value.docs
+          final tags = model.rawTagSubject.value.docs
               .map((rawTag) => Tag.fromDatabase(rawTag))
               .toList();
 
@@ -170,7 +169,21 @@ class NoteListScreenWidgetModel
     _noteListState.content(notes);
   }
 
-  void _tagStreamListener(QuerySnapshot snapshot) {}
+  void _tagStreamListener(QuerySnapshot snapshot) {
+    final tags =
+        snapshot.docs.map((rawTag) => Tag.fromDatabase(rawTag)).toList();
+    final currentState = _noteListState.value?.data;
+    if (currentState != null) {
+      final newState = currentState
+          .map((e) => e.copyWith(
+                tag:
+                    tags.firstWhereOrNull((element) => element.id == e.tag?.id),
+                title: e.tag?.title ?? e.title,
+              ))
+          .toList();
+      _noteListState.content(newState);
+    }
+  }
 
   Future<void> _finishNote(Note newNote) async {
     final notesCount = _noteListState.value?.data?.length ?? 0;
@@ -200,5 +213,13 @@ class NoteListScreenWidgetModel
         ..remove(newNote);
       _noteListState.content(currentState);
     }
+  }
+
+  Future<void> _initState() async {
+    await loadAllNotes();
+    rawNoteStreamSubscription =
+        model.rawNoteSubject.listen(_noteStreamListener);
+    rawTagStreamSubscription =
+        model.rawTagSubject.stream.listen(_tagStreamListener);
   }
 }

@@ -20,6 +20,6 @@ abstract class INoteRepository {
   /// Edit note data by id
   Future<void> editNote({
     required String noteId,
-    required Note newNoteData,
+    required Map<String, dynamic> newNoteData,
   });
 }

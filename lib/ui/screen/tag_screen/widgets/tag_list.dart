@@ -6,11 +6,13 @@ import 'package:time_tracker/ui/screen/tag_screen/widgets/tag_widget.dart';
 class TagList extends StatelessWidget {
   final List<Tag> tags;
   final void Function(int index) onDismissed;
+  final void Function(Tag tagToEdiit) onTapEdit;
   final ScrollController? controller;
 
   const TagList({
     required this.tags,
     required this.onDismissed,
+    required this.onTapEdit,
     this.controller,
     Key? key,
   }) : super(key: key);
@@ -26,8 +28,17 @@ class TagList extends StatelessWidget {
           ),
           child: Padding(
             padding: const EdgeInsets.all(10.0),
-            child: TagWidget(
-              tag: tags.elementAt(index),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TagWidget(
+                  tag: tags.elementAt(index),
+                ),
+                IconButton(
+                  onPressed: () => onTapEdit(tags[index]),
+                  icon: const Icon(Icons.create),
+                ),
+              ],
             ),
           ),
         );

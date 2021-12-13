@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:time_tracker/data/i_tag_repository.dart';
 import 'package:time_tracker/domain/tag/tag.dart';
@@ -11,7 +13,7 @@ class LocalTagRepository implements ITagRepository {
   Future<void> addTag(Tag tag) async {}
 
   @override
-  Future<void> deleteTag(String tagId) async {}
+  Future<void> deleteTag(Tag tagToDelete) async {}
 
   @override
   Future<List<Tag>> loadAllTags() async {
@@ -19,7 +21,15 @@ class LocalTagRepository implements ITagRepository {
   }
 
   @override
-  Future<void> editTag(String tagId) async {
+  Future<void> updateTag(Tag tagToUpdate) async {
     throw UnimplementedError();
   }
+
+  @override
+  // TODO: implement updatedTagStream
+  StreamController<Tag> get updatedTagStream => throw UnimplementedError();
+
+  @override
+  // TODO: implement deletedTagStream
+  StreamController<Tag> get deletedTagStream => throw UnimplementedError();
 }

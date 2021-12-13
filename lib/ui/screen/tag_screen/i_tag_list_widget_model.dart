@@ -11,4 +11,6 @@ abstract class ITagListWidgetModel extends IWidgetModel {
   Future<void> showAddTagDialog();
 
   Future<void> onTagDismissed(int index);
+
+  Future<void> showEditDialog(Tag tagToEdit);
 }

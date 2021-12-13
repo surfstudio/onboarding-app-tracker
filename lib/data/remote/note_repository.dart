@@ -53,8 +53,10 @@ class NoteRepository implements INoteRepository {
   }
 
   @override
-  Future<void> editNote({required String noteId, required Note newNoteData}) {
-    // TODO(Bazarova): implement editNote
-    throw UnimplementedError();
+  Future<void> editNote({
+    required String noteId,
+    required Map<String, dynamic> newNoteData,
+  }) async {
+    await _noteList.doc(noteId).update(newNoteData);
   }
 }
