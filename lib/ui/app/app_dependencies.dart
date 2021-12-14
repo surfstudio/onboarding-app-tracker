@@ -50,12 +50,14 @@ class _AppDependenciesState extends State<AppDependencies> {
 
     _tagListScreenModel = TagListScreenModel(
       _tagRepository,
+      _authScreenModel,
       _defaultErrorHandler,
     );
 
     _noteListScreenModel = NoteListScreenModel(
       _noteRepository,
       _tagListScreenModel,
+      _authScreenModel,
       _defaultErrorHandler,
     );
 

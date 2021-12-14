@@ -17,23 +17,24 @@ class TempLocalNoteRepository implements INoteRepository {
   }
 
   @override
-  Future<List<Note>> loadAllNotes() async {
+  Future<List<Note>> loadAllNotes(String userId) async {
     await _networkImitation.addDuration();
     return _noteList..sort(_sortByStartDateTimeCallback);
   }
 
   @override
-  Future<void> addNote(Note newNote) async {
+  Future<void> addNote(String userId, Note newNote) async {
     await _networkImitation.addDuration();
     _networkImitation.addException(howOften: 3);
     _noteList.add(newNote);
   }
 
   @override
-  Future<void> deleteNote(Note note) async {}
+  Future<void> deleteNote(String userId, Note note) async {}
 
   @override
   Future<List<Note>> editNote({
+    required String userId,
     required String noteId,
     required Map<String, dynamic> newNoteData,
   }) async {
@@ -44,7 +45,7 @@ class TempLocalNoteRepository implements INoteRepository {
   }
 
   @override
-  Future<void> finishNote(int endTimestamp) {
+  Future<void> finishNote(String userId, int endTimestamp) {
     // TODO(Bazarova): implement finishNote
     throw UnimplementedError();
   }
@@ -63,6 +64,12 @@ class TempLocalNoteRepository implements INoteRepository {
     final startTimeNoteA = a.startDateTime;
     final startTimeNoteB = b.startDateTime;
     return startTimeNoteA.compareTo(startTimeNoteB);
+  }
+
+  @override
+  Stream<QuerySnapshot<Object?>> createNoteStream(String userId) {
+    // TODO: implement createNoteStream
+    throw UnimplementedError();
   }
 }
 

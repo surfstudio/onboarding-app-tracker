@@ -35,7 +35,8 @@ class TagListScreenWidgetModel
   @override
   void initWidgetModel() {
     super.initWidgetModel();
-    rawTagStreamSubscription = model.tagStream.listen(_rawTagStreamListener);
+    rawTagStreamSubscription =
+        model.rawTagSubject.listen(_rawTagStreamListener);
   }
 
   @override
@@ -47,7 +48,9 @@ class TagListScreenWidgetModel
   @override
   Future<void> loadAllTags() async {
     final tags = await model.loadAllTags();
-    _tagListState.content(tags);
+    if (tags != null) {
+      _tagListState.content(tags);
+    }
   }
 
   @override

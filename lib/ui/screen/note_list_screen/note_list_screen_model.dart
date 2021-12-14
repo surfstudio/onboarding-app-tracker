@@ -2,85 +2,96 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elementary/elementary.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:time_tracker/data/i_note_repository.dart';
 import 'package:time_tracker/domain/note/note.dart';
 import 'package:time_tracker/domain/tag/tag.dart';
+import 'package:time_tracker/ui/screen/auth/auth_screen_model.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen.dart';
 import 'package:time_tracker/ui/screen/tag_screen/tag_list_screen_model.dart';
 
 /// Model for [NoteListScreen]
 class NoteListScreenModel extends ElementaryModel {
-  final TagListScreenModel tagListScreenModel;
+  final BehaviorSubject<User?> authChangesSubject = BehaviorSubject<User?>();
   final BehaviorSubject<QuerySnapshot> rawTagSubject =
       BehaviorSubject<QuerySnapshot>();
-  late final BehaviorSubject<QuerySnapshot> rawNoteSubject;
-  late final StreamSubscription _rawNoteStreamSubscription;
-  late final StreamSubscription _rawTagStreamSubscription;
-  late final StreamSubscription _updatedTagStreamSubscription;
-  late final StreamSubscription _deletedTagStreamSubscription;
+  final BehaviorSubject<QuerySnapshot> rawNoteSubject =
+      BehaviorSubject<QuerySnapshot>();
   final INoteRepository _noteRepository;
+  final AuthScreenModel _authScreenModel;
+  final TagListScreenModel _tagListScreenModel;
+  StreamSubscription? _authChangesSubscription;
+  StreamSubscription? _rawNoteStreamSubscription;
+  StreamSubscription? _rawTagStreamSubscription;
+  StreamSubscription? _updatedTagStreamSubscription;
+  StreamSubscription? _deletedTagStreamSubscription;
 
   NoteListScreenModel(
     this._noteRepository,
-    this.tagListScreenModel,
+    this._tagListScreenModel,
+    this._authScreenModel,
     ErrorHandler errorHandler,
   ) : super(errorHandler: errorHandler) {
-    _rawNoteStreamSubscription =
-        _noteRepository.noteStream.listen(_rawNoteStreamListener);
-    _rawTagStreamSubscription =
-        tagListScreenModel.tagStream.listen(_rawTagStreamListener);
-    _updatedTagStreamSubscription = tagListScreenModel.updatedTagStream.stream
-        .listen(_updatedTagStreamListener);
-    _deletedTagStreamSubscription = tagListScreenModel.deletedTagStream.stream
-        .listen(_deletedTagStreamListener);
-    rawNoteSubject = BehaviorSubject<QuerySnapshot>();
+    _authChangesSubscription =
+        _authScreenModel.authStateChanges.listen(_authChangesListener);
   }
 
   @override
   void dispose() {
-    _rawNoteStreamSubscription.cancel();
-    _rawTagStreamSubscription.cancel();
-    _updatedTagStreamSubscription.cancel();
-    _deletedTagStreamSubscription.cancel();
+    _authChangesSubscription?.cancel();
+    _cancelAuthorizedSubscription();
+    authChangesSubject.close();
     rawTagSubject.close();
     rawNoteSubject.close();
     super.dispose();
   }
 
-  Future<List<Note>> loadAllNotes() async {
-    try {
-      return await _noteRepository.loadAllNotes();
-    } on Exception catch (e) {
-      handleError(e);
-      rethrow;
+  Future<List<Note>?> loadAllNotes() async {
+    final user = authChangesSubject.value;
+    if (user != null) {
+      try {
+        return await _noteRepository.loadAllNotes(user.uid);
+      } on Exception catch (e) {
+        handleError(e);
+        rethrow;
+      }
     }
   }
 
   Future<void> addNote(Note note) async {
-    try {
-      await _noteRepository.addNote(note);
-    } on Exception catch (e) {
-      handleError(e);
-      rethrow;
+    final user = authChangesSubject.value;
+    if (user != null) {
+      try {
+        await _noteRepository.addNote(user.uid, note);
+      } on Exception catch (e) {
+        handleError(e);
+        rethrow;
+      }
     }
   }
 
   Future<void> finishNote(int endTimestamp) async {
-    try {
-      await _noteRepository.finishNote(endTimestamp);
-    } on Exception catch (e) {
-      handleError(e);
-      rethrow;
+    final user = authChangesSubject.value;
+    if (user != null) {
+      try {
+        await _noteRepository.finishNote(user.uid, endTimestamp);
+      } on Exception catch (e) {
+        handleError(e);
+        rethrow;
+      }
     }
   }
 
   Future<void> deleteNote(Note note) async {
-    try {
-      await _noteRepository.deleteNote(note);
-    } on Exception catch (e) {
-      handleError(e);
-      rethrow;
+    final user = authChangesSubject.value;
+    if (user != null) {
+      try {
+        await _noteRepository.deleteNote(user.uid, note);
+      } on Exception catch (e) {
+        handleError(e);
+        rethrow;
+      }
     }
   }
 
@@ -88,15 +99,28 @@ class NoteListScreenModel extends ElementaryModel {
     required String noteId,
     required Map<String, dynamic> newNoteData,
   }) async {
-    try {
-      await _noteRepository.editNote(
-        noteId: noteId,
-        newNoteData: newNoteData,
-      );
-    } on Exception catch (e) {
-      handleError(e);
-      rethrow;
+    final user = authChangesSubject.value;
+    if (user != null) {
+      try {
+        await _noteRepository.editNote(
+          userId: user.uid,
+          noteId: noteId,
+          newNoteData: newNoteData,
+        );
+      } on Exception catch (e) {
+        handleError(e);
+        rethrow;
+      }
     }
+  }
+
+  void _authChangesListener(User? user) {
+    if (user != null) {
+      _createAuthorizedSubscription(user);
+    } else {
+      _cancelAuthorizedSubscription();
+    }
+    authChangesSubject.add(user);
   }
 
   void _rawNoteStreamListener(QuerySnapshot rawNoteList) {
@@ -133,5 +157,24 @@ class NoteListScreenModel extends ElementaryModel {
 
   Future<void> _deletedTagStreamListener(Tag updatedTag) async {
     await _updatedTagStreamListener(updatedTag, shouldDeleteTag: true);
+  }
+
+  void _createAuthorizedSubscription(User user) {
+    _rawNoteStreamSubscription = _noteRepository
+        .createNoteStream(user.uid)
+        .listen(_rawNoteStreamListener);
+    _rawTagStreamSubscription =
+        _tagListScreenModel.rawTagSubject.listen(_rawTagStreamListener);
+    _updatedTagStreamSubscription = _tagListScreenModel.updatedTagStream.stream
+        .listen(_updatedTagStreamListener);
+    _deletedTagStreamSubscription = _tagListScreenModel.deletedTagStream.stream
+        .listen(_deletedTagStreamListener);
+  }
+
+  void _cancelAuthorizedSubscription() {
+    _rawNoteStreamSubscription?.cancel();
+    _rawTagStreamSubscription?.cancel();
+    _updatedTagStreamSubscription?.cancel();
+    _deletedTagStreamSubscription?.cancel();
   }
 }

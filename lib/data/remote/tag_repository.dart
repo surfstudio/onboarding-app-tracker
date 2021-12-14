@@ -5,11 +5,6 @@ import 'package:time_tracker/data/i_tag_repository.dart';
 import 'package:time_tracker/domain/tag/tag.dart';
 
 class TagRepository implements ITagRepository {
-  final _tagList = FirebaseFirestore.instance.collection('tag_list');
-
-  @override
-  Stream<QuerySnapshot<Object?>> get tagStream => _tagList.snapshots();
-
   @override
   StreamController<Tag> get updatedTagStream => StreamController<Tag>();
 
@@ -17,29 +12,48 @@ class TagRepository implements ITagRepository {
   StreamController<Tag> get deletedTagStream => StreamController<Tag>();
 
   @override
-  Future<void> addTag(Tag tag) async {
+  Stream<QuerySnapshot> createTagStream(String userId) {
+    final _tagList = getFirebaseInstance(userId);
+    return _tagList.snapshots();
+  }
+
+  @override
+  Future<void> addTag(String userId, Tag tag) async {
+    final _tagList = getFirebaseInstance(userId);
     await _tagList.add(<String, dynamic>{
       'title': tag.title,
     });
   }
 
   @override
-  Future<void> deleteTag(Tag tagToDelete) async {
+  Future<void> deleteTag(String userId, Tag tagToDelete) async {
+    final _tagList = getFirebaseInstance(userId);
     await _tagList.doc(tagToDelete.id).delete();
   }
 
   @override
-  Future<List<Tag>> loadAllTags() async {
+  Future<List<Tag>> loadAllTags(
+    String userId,
+  ) async {
+    final _tagList = getFirebaseInstance(userId);
     final tagsSnapshot = await _tagList.get();
     return tagsSnapshot.docs.map((rawTag) => Tag.fromDatabase(rawTag)).toList();
   }
 
   @override
-  Future<void> updateTag(Tag editedTag) async {
+  Future<void> updateTag(String userId, Tag editedTag) async {
+    final _tagList = getFirebaseInstance(userId);
     await _tagList.doc(editedTag.id).update(
       <String, dynamic>{
         'title': editedTag.title,
       },
     );
+  }
+
+  CollectionReference<Map<String, dynamic>> getFirebaseInstance(String userId) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('tag_list');
   }
 }

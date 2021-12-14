@@ -10,26 +10,34 @@ class LocalTagRepository implements ITagRepository {
   Stream<QuerySnapshot<Object?>> get tagStream => throw UnimplementedError();
 
   @override
-  Future<void> addTag(Tag tag) async {}
+  Future<void> addTag(String userId, Tag tag) async {}
 
   @override
-  Future<void> deleteTag(Tag tagToDelete) async {}
+  Future<void> deleteTag(String userId, Tag tagToDelete) async {}
 
   @override
-  Future<List<Tag>> loadAllTags() async {
+  Future<List<Tag>> loadAllTags(
+    String userId,
+  ) async {
     return [Tag(id: 'default', title: 'My Tag')];
   }
 
   @override
-  Future<void> updateTag(Tag tagToUpdate) async {
+  Future<void> updateTag(String userId, Tag tagToUpdate) async {
     throw UnimplementedError();
   }
 
   @override
-  // TODO: implement updatedTagStream
+  // TODO(Bazarova): implement updatedTagStream
   StreamController<Tag> get updatedTagStream => throw UnimplementedError();
 
   @override
-  // TODO: implement deletedTagStream
+  // TODO(Bazarova): implement deletedTagStream
   StreamController<Tag> get deletedTagStream => throw UnimplementedError();
+
+  @override
+  Stream<QuerySnapshot<Object?>> createTagStream(String userId) {
+    // TODO(Bazarova): implement createTagStream
+    throw UnimplementedError();
+  }
 }

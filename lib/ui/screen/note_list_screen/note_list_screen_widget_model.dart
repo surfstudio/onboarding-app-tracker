@@ -65,9 +65,11 @@ class NoteListScreenWidgetModel
     final previousState = _noteListState.value?.data;
     _noteListState.loading();
     try {
-      final sortedNotes = await model.loadAllNotes()
-        ..sort();
-      _noteListState.content(sortedNotes);
+      final rawNotes = await model.loadAllNotes();
+      if (rawNotes != null) {
+        final sortedNotes = rawNotes..sort();
+        _noteListState.content(sortedNotes);
+      }
     } on Exception catch (e) {
       _noteListState.error(e, previousState);
     }
