@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:time_tracker/ui/res/app_colors.dart';
 import 'package:time_tracker/ui/res/app_edge_insets.dart';
+import 'package:time_tracker/util/duration_formatter.dart';
 
 class DurationWidget extends StatelessWidget {
   final Duration noteDuration;
 
-  String get title => _durationToString(noteDuration);
+  String get title => DurationFormatter.format(noteDuration);
 
   BoxDecoration get _decoration => const BoxDecoration(
-        color: AppColors.bgGreen,
         borderRadius: BorderRadius.all(Radius.circular(15)),
       );
 
@@ -25,23 +25,6 @@ class DurationWidget extends StatelessWidget {
         style: Theme.of(context).textTheme.bodyText1,
       ),
     );
-  }
-
-  String _durationToString(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    String format(String twoDigits, String description) {
-      if (twoDigits == '00') {
-        return '';
-      }
-      return '$twoDigits $description';
-    }
-
-    final hours = format(twoDigits(duration.inHours), 'час ');
-    final minutes = format(twoDigits(duration.inMinutes.remainder(60)), 'мин ');
-    final seconds = format(twoDigits(duration.inSeconds.remainder(60)), 'сек ');
-    // Проблел в return добавлен для симметрии и обусловлен наличием пробелов
-    // в параметрах description метода format
-    return ' $hours$minutes$seconds';
   }
 
   /// The [_configColor] depends on the [noteDuration] value.

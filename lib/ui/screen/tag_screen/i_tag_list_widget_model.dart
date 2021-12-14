@@ -6,8 +6,6 @@ abstract class ITagListWidgetModel extends IWidgetModel {
 
   void loadAllTags();
 
-  Widget tagList();
-
   Future<void> showAddTagDialog();
 
   Future<void> onTagDismissed(int index);

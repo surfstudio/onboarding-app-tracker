@@ -125,10 +125,7 @@ class NoteListScreenModel extends ElementaryModel {
     } else {
       newNoteData = <String, dynamic>{
         'title': updatedTag.title,
-        'tag': <String, dynamic>{
-          'title': updatedTag.title,
-          'id': updatedTag.id,
-        },
+        'tag': updatedTag.toJson(),
       };
     }
     await editNote(noteId: noteWithUpdatedTagId, newNoteData: newNoteData);

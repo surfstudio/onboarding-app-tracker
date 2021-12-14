@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:time_tracker/domain/tag/tag.dart';
-import 'package:time_tracker/ui/screen/note_list_screen/widgets/note_list.dart';
 import 'package:time_tracker/ui/screen/tag_screen/widgets/tag_widget.dart';
+import 'package:time_tracker/ui/widgets/dismissible/dismissible_background.dart';
 
 class TagList extends StatelessWidget {
   final List<Tag> tags;

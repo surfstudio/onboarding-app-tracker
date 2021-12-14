@@ -40,16 +40,7 @@ class Note with _$Note implements Comparable<Note> {
   factory Note.fromDatabase(QueryDocumentSnapshot document) {
     final rawNote = document.data() as Map<String, dynamic>?;
     final rawTag = rawNote?['tag'] as Map<String, dynamic>?;
-    Tag? tag;
-
-    if (rawTag != null) {
-      tag = Tag(
-        title: rawTag['title'] as String,
-        id: rawTag['id'] as String,
-      );
-    } else {
-      tag = null;
-    }
+    final tag = (rawTag == null ? rawTag : Tag.fromJson(rawTag)) as Tag?;
 
     return Note(
       id: document.id,

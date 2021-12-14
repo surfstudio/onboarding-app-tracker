@@ -54,8 +54,8 @@ class TagListScreenModel extends ElementaryModel implements ITagRepository {
   }
 
   @override
-  Future<void> updateTag(Tag updatedTag) async {
-    _updatedTagStream.add(updatedTag);
-    await _tagRepository.updateTag(updatedTag);
+  Future<void> updateTag(Tag editedTag) async {
+    _updatedTagStream.add(editedTag);
+    await _tagRepository.updateTag(editedTag);
   }
 }

@@ -13,16 +13,7 @@ class NoteRepository implements INoteRepository {
   @override
   Future<void> addNote(Note note) async {
     final rawTag = note.tag;
-    Map<String, dynamic>? tag;
-
-    if (rawTag != null) {
-      tag = <String, dynamic>{
-        'title': rawTag.title,
-        'id': rawTag.id,
-      };
-    } else {
-      tag = null;
-    }
+    final tag = rawTag == null ? rawTag : rawTag.toJson();
 
     await _noteList.add(<String, dynamic>{
       'title': note.title,

@@ -35,10 +35,10 @@ class TagRepository implements ITagRepository {
   }
 
   @override
-  Future<void> updateTag(Tag updatedTag) async {
-    await _tagList.doc(updatedTag.id).update(
+  Future<void> updateTag(Tag editedTag) async {
+    await _tagList.doc(editedTag.id).update(
       <String, dynamic>{
-        'title': updatedTag.title,
+        'title': editedTag.title,
       },
     );
   }

@@ -18,14 +18,15 @@ class NoteListScreen extends ElementaryWidget<INoteListWidgetModel> {
   @override
   Widget build(INoteListWidgetModel wm) {
     return Scaffold(
-      // TODO(Bazarova): переделать на сливер (хочу сливер апп бар)
       appBar: AppBar(
         title: const Text(
           'Work log',
         ),
       ),
       drawer: Drawer(
-        child: DrawerContent(wm: wm),
+        child: DrawerContent(
+          onTapTags: wm.onTapTags,
+        ),
       ),
       body: EntityStateNotifierBuilder<List<Note>>(
         listenableEntityState: wm.noteListState,

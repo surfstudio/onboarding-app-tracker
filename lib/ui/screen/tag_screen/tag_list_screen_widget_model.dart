@@ -8,9 +8,7 @@ import 'package:time_tracker/domain/tag/tag.dart';
 import 'package:time_tracker/ui/screen/tag_screen/tag_list_screen.dart';
 import 'package:time_tracker/ui/screen/tag_screen/tag_list_screen_model.dart';
 import 'package:time_tracker/ui/screen/tag_screen/widgets/tag_input_field.dart';
-import 'package:time_tracker/ui/screen/tag_screen/widgets/tag_list.dart';
 import 'package:time_tracker/ui/widgets/dialog/input_dialog.dart';
-import 'package:time_tracker/ui/widgets/empty_list/empty_list.dart';
 
 part 'i_tag_list_widget_model.dart';
 
@@ -26,7 +24,7 @@ TagListScreenWidgetModel tagListScreenWidgetModelFactory(
 class TagListScreenWidgetModel
     extends WidgetModel<TagListScreen, TagListScreenModel>
     implements ITagListWidgetModel {
-  late final StreamSubscription tagStreamSubscription;
+  late final StreamSubscription rawTagStreamSubscription;
   final _tagListState = EntityStateNotifier<List<Tag>>();
 
   @override
@@ -37,12 +35,12 @@ class TagListScreenWidgetModel
   @override
   void initWidgetModel() {
     super.initWidgetModel();
-    tagStreamSubscription = model.tagStream.listen(_tagStreamListener);
+    rawTagStreamSubscription = model.tagStream.listen(_rawTagStreamListener);
   }
 
   @override
   void dispose() {
-    tagStreamSubscription.cancel();
+    rawTagStreamSubscription.cancel();
     super.dispose();
   }
 
@@ -50,20 +48,6 @@ class TagListScreenWidgetModel
   Future<void> loadAllTags() async {
     final tags = await model.loadAllTags();
     _tagListState.content(tags);
-  }
-
-  @override
-  Widget tagList() {
-    final tags = _tagListState.value?.data;
-    if (tags != null && tags.isNotEmpty) {
-      return TagList(
-        tags: tags,
-        onDismissed: onTagDismissed,
-        onTapEdit: showEditDialog,
-      );
-    } else {
-      return const EmptyList();
-    }
   }
 
   @override
@@ -88,7 +72,6 @@ class TagListScreenWidgetModel
             inputField: TagInputField(
               onChanged: onChanged,
             ),
-            // onChanged: onChanged,
             onSubmit: onSubmit,
             title: 'Придумайте тег',
             submitButtonText: 'Подтвердить',
@@ -147,7 +130,7 @@ class TagListScreenWidgetModel
       try {
         await model.updateTag(editedTag);
       } on FirebaseException catch (_) {
-        throw Exception('Cannot add new tag');
+        throw Exception('Cannot edit tag');
       }
     }
   }
@@ -162,7 +145,7 @@ class TagListScreenWidgetModel
     }
   }
 
-  void _tagStreamListener(QuerySnapshot snapshot) {
+  void _rawTagStreamListener(QuerySnapshot snapshot) {
     final tags =
         snapshot.docs.map((rawTag) => Tag.fromDatabase(rawTag)).toList();
     _tagListState.content(tags);

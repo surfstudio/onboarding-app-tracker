@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:collection/src/iterable_extensions.dart';
+import 'package:collection/collection.dart';
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -35,12 +35,6 @@ class NoteListScreenWidgetModel
   @override
   ListenableState<EntityState<List<Note>>> get noteListState => _noteListState;
 
-  @override
-  TextStyle? get subtitleStyle1 => Theme.of(context).textTheme.subtitle1;
-
-  @override
-  TextStyle? get subtitleStyle2 => Theme.of(context).textTheme.subtitle2;
-
   NoteListScreenWidgetModel(
     NoteListScreenModel model,
   ) : super(model);
@@ -62,7 +56,6 @@ class NoteListScreenWidgetModel
   void onErrorHandle(Object error) {
     super.onErrorHandle(error);
     hideCurrentSnackBar();
-    // TODO(Bazarova): добавь обработчик ошибок (с компьютерного на человеческий)
     showSimpleSnackBar(error.toString());
   }
 
@@ -164,6 +157,7 @@ class NoteListScreenWidgetModel
         },
       );
 
+  // ToDo(Bazarova): дублирование с функицей showAddNoteDialog
   @override
   Future<void> showEditNoteDialog(Note noteToEdit) async => showDialog<void>(
         context: context,
