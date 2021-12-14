@@ -1,21 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:time_tracker/data/i_auth_repository.dart';
 
 class AuthRepository implements IAuthRepository {
-  @override
-  Future<void> login() {
-    // TODO(Bazarova): implement login
-    throw UnimplementedError();
-  }
+  final _userList = FirebaseFirestore.instance.collection('users');
+  final _authStateChanges = FirebaseAuth.instance.authStateChanges();
 
   @override
-  Future<void> logout() {
-    // TODO(Bazarova): implement logout
-    throw UnimplementedError();
-  }
+  Stream<User?> get authStateChanges => _authStateChanges;
 
   @override
-  Future<void> register() {
-    // TODO(Bazarova): implement register
-    throw UnimplementedError();
+  Future<void> addUserIfRegistered(User user) async {
+    await _userList.doc(user.uid).set(<String, dynamic>{});
   }
 }

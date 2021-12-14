@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterfire_ui/auth.dart';
 import 'package:provider/provider.dart';
 import 'package:time_tracker/domain/note/note.dart';
 import 'package:time_tracker/domain/tag/tag.dart';
@@ -99,6 +100,23 @@ class NoteListScreenWidgetModel
     Navigator.push(
       context,
       MaterialPageRoute<void>(builder: (context) => const TagListScreen()),
+    );
+  }
+
+  @override
+  void onTapProfile() {
+    Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        builder: (context) => const ProfileScreen(
+          providerConfigs: [
+            GoogleProviderConfiguration(
+              clientId: '...',
+            ),
+          ],
+          avatarSize: 50,
+        ),
+      ),
     );
   }
 

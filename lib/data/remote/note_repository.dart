@@ -50,4 +50,11 @@ class NoteRepository implements INoteRepository {
   }) async {
     await _noteList.doc(noteId).update(newNoteData);
   }
+
+  CollectionReference<Map<String, dynamic>> getFirebaseInstance(String userId) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('note_list');
+  }
 }
