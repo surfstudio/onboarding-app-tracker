@@ -33,7 +33,10 @@ class InputDialog extends StatelessWidget {
                   primary: AppColors.black,
                 ),
                 onPressed: onSubmit,
-                child: Text(submitButtonText ?? 'Подтвердить'),
+                child: Text(
+                  submitButtonText ?? 'Подтвердить',
+                  style: Theme.of(context).textTheme.button,
+                ),
               ),
             ],
           ),

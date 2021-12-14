@@ -123,8 +123,13 @@ class NoteListScreenWidgetModel
           String? title;
           Tag? tag;
 
+          final tags = model.rawTagSubject.value.docs
+              .map((rawTag) => Tag.fromDatabase(rawTag))
+              .toList();
+
           void onSubmit() {
             if (title != null) {
+              tag ??= _returnTagIfTitleInTags(tags, title!);
               final newNote = Note(
                 startTimestamp: DateTime.now().millisecondsSinceEpoch,
                 id: 'default',
@@ -139,10 +144,6 @@ class NoteListScreenWidgetModel
           void onChanged(String inputText) => title = inputText;
           void onChooseTag(Tag chosenTag) => tag = chosenTag;
           void onSelectedTag(Tag tag) => onChooseTag(tag);
-
-          final tags = model.rawTagSubject.value.docs
-              .map((rawTag) => Tag.fromDatabase(rawTag))
-              .toList();
 
           return InputDialog(
             inputField: NoteInputField(
@@ -165,8 +166,13 @@ class NoteListScreenWidgetModel
           String? title;
           Tag? tag;
 
+          final tags = model.rawTagSubject.value.docs
+              .map((rawTag) => Tag.fromDatabase(rawTag))
+              .toList();
+
           void onSubmit() {
             if (title != null && title != '' && title != noteToEdit.title) {
+              tag ??= _returnTagIfTitleInTags(tags, title!);
               final newNoteData = <String, dynamic>{
                 'title': title,
                 'tag': tag?.toJson(),
@@ -179,10 +185,6 @@ class NoteListScreenWidgetModel
           void onChanged(String inputText) => title = inputText;
           void onChooseTag(Tag chosenTag) => tag = chosenTag;
           void onSelectedTag(Tag tag) => onChooseTag(tag);
-
-          final tags = model.rawTagSubject.value.docs
-              .map((rawTag) => Tag.fromDatabase(rawTag))
-              .toList();
 
           return InputDialog(
             inputField: NoteInputField(
@@ -261,6 +263,15 @@ class NoteListScreenWidgetModel
       } on FirebaseException catch (_) {
         throw Exception('Cannot edit note');
       }
+    }
+  }
+
+  Tag? _returnTagIfTitleInTags(List<Tag> tags, String title) {
+    if (tags.firstWhereOrNull((element) => element.title == title) != null) {
+      return Tag(
+        title: title,
+        id: 'default',
+      );
     }
   }
 

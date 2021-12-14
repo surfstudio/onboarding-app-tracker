@@ -42,6 +42,15 @@ class NoteInputField extends StatelessWidget {
           ),
         );
       },
+      fieldViewBuilder: (context, controller, focus, _) {
+        return TextFormField(
+          style: Theme.of(context).textTheme.bodyText2,
+          controller: controller,
+          focusNode: focus,
+          autofocus: true,
+          onChanged: onChanged,
+        );
+      },
       optionsBuilder: (textEditingValue) {
         onChanged(textEditingValue.text);
         return tagList!.where((option) {

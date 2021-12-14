@@ -26,6 +26,7 @@ class App extends StatelessWidget {
               AppTypography.subHeadline2.copyWith(color: AppColors.black),
           bodyText1: AppTypography.body.copyWith(color: AppColors.white),
           bodyText2: AppTypography.body2.copyWith(color: AppColors.black),
+          button: AppTypography.subHeadline2.copyWith(color: AppColors.black),
         ),
       ),
       darkTheme: ThemeData(
@@ -40,6 +41,7 @@ class App extends StatelessWidget {
               AppTypography.subHeadline2.copyWith(color: AppColors.white),
           bodyText1: AppTypography.body.copyWith(color: AppColors.black),
           bodyText2: AppTypography.body2.copyWith(color: AppColors.white),
+          button: AppTypography.subHeadline2.copyWith(color: AppColors.white),
         ),
       ),
       home: const NoteListScreen(),
