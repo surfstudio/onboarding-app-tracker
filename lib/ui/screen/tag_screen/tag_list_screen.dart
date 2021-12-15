@@ -23,7 +23,7 @@ class TagListScreen extends ElementaryWidget<ITagListWidgetModel> {
         listenableEntityState: wm.tagListState,
         loadingBuilder: (_, __) => Container(),
         errorBuilder: (_, __, ___) => Container(),
-        builder: (_, tags) => tags != null
+        builder: (_, tags) => tags != null && tags.isNotEmpty
             ? TagList(
                 tags: tags,
                 onDismissed: wm.onTagDismissed,

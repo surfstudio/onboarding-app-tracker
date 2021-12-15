@@ -6,10 +6,12 @@ import 'package:time_tracker/domain/tag/tag.dart';
 
 class TagRepository implements ITagRepository {
   @override
-  StreamController<Tag> get updatedTagStream => StreamController<Tag>();
+  StreamController<Tag> get updatedTagStream =>
+      StreamController<Tag>.broadcast();
 
   @override
-  StreamController<Tag> get deletedTagStream => StreamController<Tag>();
+  StreamController<Tag> get deletedTagStream =>
+      StreamController<Tag>.broadcast();
 
   @override
   Stream<QuerySnapshot> createTagStream(String userId) {

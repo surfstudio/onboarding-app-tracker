@@ -21,8 +21,6 @@ class TagListScreenModel extends ElementaryModel {
 
   StreamController<Tag> get deletedTagStream => _deletedTagStream;
 
-  // Stream<QuerySnapshot<Object?>> get tagStream => _tagRepository.tagStream;
-
   StreamSubscription? _authChangesSubscription;
   StreamSubscription? _rawTagStreamSubscription;
 
