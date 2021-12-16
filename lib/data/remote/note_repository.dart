@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:time_tracker/data/i_note_repository.dart';
 import 'package:time_tracker/domain/note/note.dart';
 
-class CloudFirestoreNoteRepository implements INoteRepository {
+class NoteRepository implements INoteRepository {
   final _noteList = FirebaseFirestore.instance.collection('note_list');
 
   @override
@@ -12,8 +12,12 @@ class CloudFirestoreNoteRepository implements INoteRepository {
 
   @override
   Future<void> addNote(Note note) async {
+    final rawTag = note.tag;
+    final tag = rawTag == null ? rawTag : rawTag.toJson();
+
     await _noteList.add(<String, dynamic>{
       'title': note.title,
+      'tag': tag,
       'startTimestamp': note.startTimestamp,
       'endTimestamp': note.endTimestamp,
     });
@@ -40,8 +44,10 @@ class CloudFirestoreNoteRepository implements INoteRepository {
   }
 
   @override
-  Future<void> editNote({required String noteId, required Note newNoteData}) {
-    // TODO(Bazarova): implement editNote
-    throw UnimplementedError();
+  Future<void> editNote({
+    required String noteId,
+    required Map<String, dynamic> newNoteData,
+  }) async {
+    await _noteList.doc(noteId).update(newNoteData);
   }
 }

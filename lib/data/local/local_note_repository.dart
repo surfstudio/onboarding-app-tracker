@@ -35,11 +35,11 @@ class TempLocalNoteRepository implements INoteRepository {
   @override
   Future<List<Note>> editNote({
     required String noteId,
-    required Note newNoteData,
+    required Map<String, dynamic> newNoteData,
   }) async {
     await _networkImitation.addDuration();
     _checkElementInList(noteId);
-    _noteList[_getIndexById(noteId)] = newNoteData;
+    // _noteList[_getIndexById(noteId)] = newNoteData;
     return _noteList;
   }
 
@@ -49,9 +49,9 @@ class TempLocalNoteRepository implements INoteRepository {
     throw UnimplementedError();
   }
 
-  int _getIndexById(String noteId) {
-    return _noteList.indexWhere((note) => note.id == noteId);
-  }
+  // int _getIndexById(String noteId) {
+  //   return _noteList.indexWhere((note) => note.id == noteId);
+  // }
 
   void _checkElementInList(String noteId) {
     if (!_noteList.any((note) => note.id == noteId)) {

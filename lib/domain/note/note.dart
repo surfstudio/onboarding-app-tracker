@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:time_tracker/domain/tag/tag.dart';
 
 part 'note.freezed.dart';
 
@@ -31,23 +32,28 @@ class Note with _$Note implements Comparable<Note> {
     required String title,
     required int startTimestamp,
     int? endTimestamp,
+    Tag? tag,
   }) = _Note;
 
   const Note._();
 
   factory Note.fromDatabase(QueryDocumentSnapshot document) {
-    final data = document.data() as Map<String, dynamic>?;
+    final rawNote = document.data() as Map<String, dynamic>?;
+    final rawTag = rawNote?['tag'] as Map<String, dynamic>?;
+    final tag = (rawTag == null ? rawTag : Tag.fromJson(rawTag)) as Tag?;
+
     return Note(
       id: document.id,
-      title: data?['title'] as String,
-      startTimestamp: data?['startTimestamp'] as int,
-      endTimestamp: data?['endTimestamp'] as int?,
+      title: rawNote?['title'] as String,
+      tag: tag,
+      startTimestamp: rawNote?['startTimestamp'] as int,
+      endTimestamp: rawNote?['endTimestamp'] as int?,
     );
   }
 
   @override
   int compareTo(Note other) {
     final otherStartTime = other.startDateTime;
-    return startDateTime.compareTo(otherStartTime);
+    return otherStartTime.compareTo(startDateTime);
   }
 }

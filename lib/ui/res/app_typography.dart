@@ -68,7 +68,15 @@ class AppTypography {
     fontFamily: defaultFontFamily,
   );
 
-  static const subHeadline = TextStyle(
+  static const subHeadline1 = TextStyle(
+    color: AppColors.typographyPrimary,
+    fontWeight: FontWeight.w700,
+    fontSize: 15,
+    height: 20 / 14,
+    fontFamily: defaultFontFamily,
+  );
+
+  static const subHeadline2 = TextStyle(
     color: AppColors.typographyPrimary,
     fontWeight: FontWeight.w700,
     fontSize: 14,
