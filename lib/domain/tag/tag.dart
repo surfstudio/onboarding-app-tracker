@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:time_tracker/ui/common/alias/json_data_alias.dart';
 
 part 'tag.freezed.dart';
 part 'tag.g.dart';
@@ -13,12 +14,12 @@ class Tag with _$Tag {
   }) = _Tag;
 
   factory Tag.fromDatabase(QueryDocumentSnapshot document) {
-    final rawTag = document.data() as Map<String, dynamic>?;
+    final rawTag = document.data() as JsonData?;
     return Tag(
       id: document.id,
       title: rawTag?['title'] as String,
     );
   }
 
-  factory Tag.fromJson(Map<String, dynamic> json) => _$TagFromJson(json);
+  factory Tag.fromJson(JsonData json) => _$TagFromJson(json);
 }

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:time_tracker/domain/tag/tag.dart';
+import 'package:time_tracker/ui/common/alias/json_data_alias.dart';
 
 part 'note.freezed.dart';
 
@@ -38,8 +39,8 @@ class Note with _$Note implements Comparable<Note> {
   const Note._();
 
   factory Note.fromDatabase(QueryDocumentSnapshot document) {
-    final rawNote = document.data() as Map<String, dynamic>?;
-    final rawTag = rawNote?['tag'] as Map<String, dynamic>?;
+    final rawNote = document.data() as JsonData?;
+    final rawTag = rawNote?['tag'] as JsonData?;
     final tag = (rawTag == null ? rawTag : Tag.fromJson(rawTag)) as Tag?;
 
     return Note(

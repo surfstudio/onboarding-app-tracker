@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elementary/elementary.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rxdart/rxdart.dart';
@@ -14,17 +13,15 @@ import 'package:time_tracker/ui/screen/tag_screen/tag_list_screen_model.dart';
 /// Model for [NoteListScreen]
 class NoteListScreenModel extends ElementaryModel {
   final BehaviorSubject<User?> authChangesSubject = BehaviorSubject<User?>();
-  final BehaviorSubject<QuerySnapshot> rawTagSubject =
-      BehaviorSubject<QuerySnapshot>();
-  final BehaviorSubject<QuerySnapshot> rawNoteSubject =
-      BehaviorSubject<QuerySnapshot>();
+  final BehaviorSubject<List<Tag>> rawTagSubject = BehaviorSubject<List<Tag>>();
+  final BehaviorSubject<List<Note>> noteSubject = BehaviorSubject<List<Note>>();
   final INoteRepository _noteRepository;
   final AuthScreenModel _authScreenModel;
   final TagListScreenModel _tagListScreenModel;
-  StreamSubscription? rawNoteStreamSubscription;
-  StreamSubscription? rawTagStreamSubscription;
-  StreamSubscription? updatedTagStreamSubscription;
-  StreamSubscription? deletedTagStreamSubscription;
+  StreamSubscription? _rawNoteStreamSubscription;
+  StreamSubscription? _rawTagStreamSubscription;
+  StreamSubscription? _updatedTagStreamSubscription;
+  StreamSubscription? _deletedTagStreamSubscription;
   StreamSubscription? _authChangesSubscription;
 
   NoteListScreenModel(
@@ -43,7 +40,7 @@ class NoteListScreenModel extends ElementaryModel {
     _cancelAuthorizedSubscription();
     authChangesSubject.close();
     rawTagSubject.close();
-    rawNoteSubject.close();
+    noteSubject.close();
     super.dispose();
   }
 
@@ -96,16 +93,14 @@ class NoteListScreenModel extends ElementaryModel {
   }
 
   Future<void> editNote({
-    required String noteId,
-    required Map<String, dynamic> newNoteData,
+    required Note updatedNote,
   }) async {
     final user = authChangesSubject.value;
     if (user != null) {
       try {
         await _noteRepository.editNote(
           userId: user.uid,
-          noteId: noteId,
-          newNoteData: newNoteData,
+          updatedNote: updatedNote,
         );
       } on Exception catch (e) {
         handleError(e);
@@ -118,10 +113,19 @@ class NoteListScreenModel extends ElementaryModel {
     Tag updatedTag, {
     bool shouldDeleteTag = false,
   }) async {
-    final noteWithUpdatedTagId = _findNoteWithUpdatedTag(updatedTag);
-    final newNoteData =
-        _createNewNoteData(updatedTag, shouldDeleteTag: shouldDeleteTag);
-    await editNote(noteId: noteWithUpdatedTagId, newNoteData: newNoteData);
+    final noteWithUpdatedTag = _findNoteWithUpdatedTag(updatedTag);
+    Note updatedNote;
+    if (shouldDeleteTag) {
+      updatedNote = noteWithUpdatedTag.copyWith(
+        tag: null,
+      );
+    } else {
+      updatedNote = noteWithUpdatedTag.copyWith(
+        title: updatedTag.title,
+        tag: updatedTag,
+      );
+    }
+    await editNote(updatedNote: updatedNote);
   }
 
   void _authChangesListener(User? user) {
@@ -133,57 +137,39 @@ class NoteListScreenModel extends ElementaryModel {
     authChangesSubject.add(user);
   }
 
-  void _rawNoteStreamListener(QuerySnapshot rawNoteList) {
-    rawNoteSubject.add(rawNoteList);
+  void _rawNoteStreamListener(List<Note> noteList) {
+    noteSubject.add(noteList);
   }
 
-  void _rawTagStreamListener(QuerySnapshot rawTagList) {
-    rawTagSubject.add(rawTagList);
+  void _rawTagStreamListener(List<Tag> tagList) {
+    rawTagSubject.add(tagList);
   }
 
   Future<void> _deletedTagStreamListener(Tag updatedTag) async {
     await _updatedTagStreamListener(updatedTag, shouldDeleteTag: true);
   }
 
-  String _findNoteWithUpdatedTag(Tag updatedTag) {
-    final notes = rawNoteSubject.value.docs
-        .map((rawNote) => Note.fromDatabase(rawNote))
-        .toList();
-    return notes.firstWhere((element) => element.tag?.id == updatedTag.id).id;
-  }
-
-  Map<String, dynamic> _createNewNoteData(
-    Tag updatedTag, {
-    required bool shouldDeleteTag,
-  }) {
-    if (shouldDeleteTag) {
-      return <String, dynamic>{
-        'tag': null,
-      };
-    } else {
-      return <String, dynamic>{
-        'title': updatedTag.title,
-        'tag': updatedTag.toJson(),
-      };
-    }
+  Note _findNoteWithUpdatedTag(Tag updatedTag) {
+    final notes = noteSubject.value;
+    return notes.firstWhere((element) => element.tag?.id == updatedTag.id);
   }
 
   void _createAuthorizedSubscription(User user) {
-    rawNoteStreamSubscription = _noteRepository
+    _rawNoteStreamSubscription = _noteRepository
         .createNoteStream(user.uid)
         .listen(_rawNoteStreamListener);
-    rawTagStreamSubscription =
-        _tagListScreenModel.rawTagSubject.listen(_rawTagStreamListener);
-    updatedTagStreamSubscription = _tagListScreenModel.updatedTagStream.stream
+    _rawTagStreamSubscription =
+        _tagListScreenModel.tagSubject.listen(_rawTagStreamListener);
+    _updatedTagStreamSubscription = _tagListScreenModel.updatedTagStream.stream
         .listen(_updatedTagStreamListener);
-    deletedTagStreamSubscription = _tagListScreenModel.deletedTagStream.stream
+    _deletedTagStreamSubscription = _tagListScreenModel.deletedTagStream.stream
         .listen(_deletedTagStreamListener);
   }
 
   Future<void> _cancelAuthorizedSubscription() async {
-    await rawNoteStreamSubscription?.cancel();
-    await rawTagStreamSubscription?.cancel();
-    await updatedTagStreamSubscription?.cancel();
-    await deletedTagStreamSubscription?.cancel();
+    await _rawNoteStreamSubscription?.cancel();
+    await _rawTagStreamSubscription?.cancel();
+    await _updatedTagStreamSubscription?.cancel();
+    await _deletedTagStreamSubscription?.cancel();
   }
 }

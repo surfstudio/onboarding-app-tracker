@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:time_tracker/domain/tag/tag.dart';
 
 abstract class ITagRepository {
@@ -11,7 +10,7 @@ abstract class ITagRepository {
   StreamController<Tag> get deletedTagStream;
 
   /// Real-time changes in tags stream
-  Stream<QuerySnapshot> createTagStream(String userId);
+  Stream<List<Tag>> createTagStream(String userId);
 
   /// Return all tags
   Future<List<Tag>> loadAllTags(String userId);

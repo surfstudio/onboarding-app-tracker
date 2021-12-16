@@ -4,6 +4,8 @@ import 'package:time_tracker/domain/tag/tag.dart';
 import 'package:time_tracker/ui/screen/tag_screen/tag_list_screen_widget_model.dart';
 import 'package:time_tracker/ui/screen/tag_screen/widgets/tag_list.dart';
 import 'package:time_tracker/ui/widgets/empty_list/empty_list.dart';
+import 'package:time_tracker/ui/widgets/loading/loading_error_widget.dart';
+import 'package:time_tracker/ui/widgets/loading/loading_widget.dart';
 
 class TagListScreen extends ElementaryWidget<ITagListWidgetModel> {
   const TagListScreen({
@@ -21,8 +23,8 @@ class TagListScreen extends ElementaryWidget<ITagListWidgetModel> {
       ),
       body: EntityStateNotifierBuilder<List<Tag>>(
         listenableEntityState: wm.tagListState,
-        loadingBuilder: (_, __) => Container(),
-        errorBuilder: (_, __, ___) => Container(),
+        loadingBuilder: (_, __) => const LoadingWidget(),
+        errorBuilder: (_, __, ___) => const LoadingErrorWidget(),
         builder: (_, tags) => tags != null && tags.isNotEmpty
             ? TagList(
                 tags: tags,

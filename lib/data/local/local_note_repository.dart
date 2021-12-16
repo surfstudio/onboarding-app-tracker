@@ -35,12 +35,9 @@ class TempLocalNoteRepository implements INoteRepository {
   @override
   Future<List<Note>> editNote({
     required String userId,
-    required String noteId,
-    required Map<String, dynamic> newNoteData,
+    required Note updatedNote,
   }) async {
     await _networkImitation.addDuration();
-    _checkElementInList(noteId);
-    // _noteList[_getIndexById(noteId)] = newNoteData;
     return _noteList;
   }
 
@@ -50,26 +47,16 @@ class TempLocalNoteRepository implements INoteRepository {
     throw UnimplementedError();
   }
 
-  // int _getIndexById(String noteId) {
-  //   return _noteList.indexWhere((note) => note.id == noteId);
-  // }
-
-  void _checkElementInList(String noteId) {
-    if (!_noteList.any((note) => note.id == noteId)) {
-      throw Exception('Element not found');
-    }
+  @override
+  Stream<List<Note>> createNoteStream(String userId) {
+    // TODO(Bazarova): implement createNoteStream
+    throw UnimplementedError();
   }
 
   int _sortByStartDateTimeCallback(Note a, Note b) {
     final startTimeNoteA = a.startDateTime;
     final startTimeNoteB = b.startDateTime;
     return startTimeNoteA.compareTo(startTimeNoteB);
-  }
-
-  @override
-  Stream<QuerySnapshot<Object?>> createNoteStream(String userId) {
-    // TODO: implement createNoteStream
-    throw UnimplementedError();
   }
 }
 

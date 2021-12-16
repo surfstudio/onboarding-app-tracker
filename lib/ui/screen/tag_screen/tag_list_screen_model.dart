@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elementary/elementary.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rxdart/rxdart.dart';
@@ -9,8 +8,7 @@ import 'package:time_tracker/domain/tag/tag.dart';
 import 'package:time_tracker/ui/screen/auth/auth_screen_model.dart';
 
 class TagListScreenModel extends ElementaryModel {
-  final BehaviorSubject<QuerySnapshot> rawTagSubject =
-      BehaviorSubject<QuerySnapshot>();
+  final BehaviorSubject<List<Tag>> tagSubject = BehaviorSubject<List<Tag>>();
   final BehaviorSubject<User?> authChangesSubject = BehaviorSubject<User?>();
   final ITagRepository _tagRepository;
   final AuthScreenModel _authScreenModel;
@@ -37,7 +35,7 @@ class TagListScreenModel extends ElementaryModel {
 
   @override
   void dispose() {
-    rawTagSubject.close();
+    tagSubject.close();
     authChangesSubject.close();
     _authChangesSubscription?.cancel();
     _cancelAuthorizedSubscription();
@@ -94,8 +92,8 @@ class TagListScreenModel extends ElementaryModel {
     }
   }
 
-  void _rawTagStreamListener(QuerySnapshot rawTagList) {
-    rawTagSubject.add(rawTagList);
+  void _rawTagStreamListener(List<Tag> tagList) {
+    tagSubject.add(tagList);
   }
 
   void _authChangesListener(User? user) {

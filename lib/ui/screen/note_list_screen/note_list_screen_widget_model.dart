@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
@@ -180,11 +179,11 @@ class NoteListScreenWidgetModel
           void onSubmit() {
             if (title != null && title != '' && title != noteToEdit.title) {
               tag ??= _returnTagIfTitleInTags(title!);
-              final newNoteData = <String, dynamic>{
-                'title': title,
-                'tag': tag?.toJson(),
-              };
-              _editNote(noteToEdit, newNoteData);
+              final updatedNote = noteToEdit.copyWith(
+                title: title!,
+                tag: tag,
+              );
+              _editNote(updatedNote);
               Navigator.pop(context);
             }
           }
@@ -204,23 +203,18 @@ class NoteListScreenWidgetModel
         },
       );
 
-  void _noteStreamListener(QuerySnapshot snapshot) {
-    final notes = snapshot.docs
-        .map((rawNote) => Note.fromDatabase(rawNote))
-        .toList()
-      ..sort();
-    _noteListState.content(notes);
+  void _noteStreamListener(List<Note> noteList) {
+    final sortedNotes = noteList..sort();
+    _noteListState.content(sortedNotes);
   }
 
-  void _tagStreamListener(QuerySnapshot snapshot) {
-    final tags =
-        snapshot.docs.map((rawTag) => Tag.fromDatabase(rawTag)).toList();
+  void _tagStreamListener(List<Tag> tagList) {
     final currentState = _noteListState.value?.data;
     if (currentState != null) {
       final newState = currentState
           .map((e) => e.copyWith(
-                tag:
-                    tags.firstWhereOrNull((element) => element.id == e.tag?.id),
+                tag: tagList
+                    .firstWhereOrNull((element) => element.id == e.tag?.id),
                 title: e.tag?.title ?? e.title,
               ))
           .toList();
@@ -252,19 +246,16 @@ class NoteListScreenWidgetModel
   }
 
   Future<void> _editNote(
-    Note noteToEdit,
-    Map<String, dynamic> newNoteData,
+    Note updatedNote,
   ) async {
-    final index = _noteListState.value?.data?.indexOf(noteToEdit);
+    final index = _noteListState.value?.data?.indexOf(updatedNote);
     if (index != null) {
-      await model.editNote(noteId: noteToEdit.id, newNoteData: newNoteData);
+      await model.editNote(updatedNote: updatedNote);
     }
   }
 
   List<Tag> _getTags() {
-    return model.rawTagSubject.value.docs
-        .map((rawTag) => Tag.fromDatabase(rawTag))
-        .toList();
+    return model.rawTagSubject.value;
   }
 
   Tag? _returnTagIfTitleInTags(String title) {
@@ -279,8 +270,7 @@ class NoteListScreenWidgetModel
 
   Future<void> _initState() async {
     await loadAllNotes();
-    rawNoteStreamSubscription =
-        model.rawNoteSubject.listen(_noteStreamListener);
+    rawNoteStreamSubscription = model.noteSubject.listen(_noteStreamListener);
     rawTagStreamSubscription =
         model.rawTagSubject.stream.listen(_tagStreamListener);
   }

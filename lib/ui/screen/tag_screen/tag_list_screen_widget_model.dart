@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -35,8 +34,7 @@ class TagListScreenWidgetModel
   @override
   void initWidgetModel() {
     super.initWidgetModel();
-    rawTagStreamSubscription =
-        model.rawTagSubject.listen(_rawTagStreamListener);
+    rawTagStreamSubscription = model.tagSubject.listen(_rawTagStreamListener);
   }
 
   @override
@@ -136,10 +134,8 @@ class TagListScreenWidgetModel
     await model.deleteTag(tagToDelete);
   }
 
-  void _rawTagStreamListener(QuerySnapshot snapshot) {
-    final tags =
-        snapshot.docs.map((rawTag) => Tag.fromDatabase(rawTag)).toList();
-    _tagListState.content(tags);
+  void _rawTagStreamListener(List<Tag> tagList) {
+    _tagListState.content(tagList);
   }
 
   void _updateState(List<Tag>? newState) {

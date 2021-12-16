@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:time_tracker/ui/screen/auth/auth_screen_widget_model.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen.dart';
+import 'package:time_tracker/ui/widgets/loading/loading_error_widget.dart';
+import 'package:time_tracker/ui/widgets/loading/loading_widget.dart';
 
 class AuthScreen extends ElementaryWidget<IAuthWidgetModel> {
   const AuthScreen({
@@ -16,8 +18,8 @@ class AuthScreen extends ElementaryWidget<IAuthWidgetModel> {
     return Scaffold(
       body: EntityStateNotifierBuilder<User?>(
         listenableEntityState: wm.tagListState,
-        loadingBuilder: (_, __) => Container(),
-        errorBuilder: (_, __, ___) => Container(),
+        loadingBuilder: (_, __) => const LoadingWidget(),
+        errorBuilder: (_, __, ___) => const LoadingErrorWidget(),
         builder: (_, user) => user == null
             ? const SignInScreen(
                 providerConfigs: [
