@@ -21,11 +21,11 @@ class NoteListScreenModel extends ElementaryModel {
   final INoteRepository _noteRepository;
   final AuthScreenModel _authScreenModel;
   final TagListScreenModel _tagListScreenModel;
+  StreamSubscription? rawNoteStreamSubscription;
+  StreamSubscription? rawTagStreamSubscription;
+  StreamSubscription? updatedTagStreamSubscription;
+  StreamSubscription? deletedTagStreamSubscription;
   StreamSubscription? _authChangesSubscription;
-  StreamSubscription? _rawNoteStreamSubscription;
-  StreamSubscription? _rawTagStreamSubscription;
-  StreamSubscription? _updatedTagStreamSubscription;
-  StreamSubscription? _deletedTagStreamSubscription;
 
   NoteListScreenModel(
     this._noteRepository,
@@ -114,6 +114,16 @@ class NoteListScreenModel extends ElementaryModel {
     }
   }
 
+  Future<void> _updatedTagStreamListener(
+    Tag updatedTag, {
+    bool shouldDeleteTag = false,
+  }) async {
+    final noteWithUpdatedTagId = _findNoteWithUpdatedTag(updatedTag);
+    final newNoteData =
+        _createNewNoteData(updatedTag, shouldDeleteTag: shouldDeleteTag);
+    await editNote(noteId: noteWithUpdatedTagId, newNoteData: newNoteData);
+  }
+
   void _authChangesListener(User? user) {
     if (user != null) {
       _createAuthorizedSubscription(user);
@@ -131,50 +141,49 @@ class NoteListScreenModel extends ElementaryModel {
     rawTagSubject.add(rawTagList);
   }
 
-  Future<void> _updatedTagStreamListener(
-    Tag updatedTag, {
-    bool shouldDeleteTag = false,
-  }) async {
-    final notes = rawNoteSubject.value.docs
-        .map((rawNote) => Note.fromDatabase(rawNote))
-        .toList();
-    final noteWithUpdatedTagId =
-        notes.firstWhere((element) => element.tag?.id == updatedTag.id).id;
-    Map<String, dynamic> newNoteData;
-
-    if (shouldDeleteTag) {
-      newNoteData = <String, dynamic>{
-        'tag': null,
-      };
-    } else {
-      newNoteData = <String, dynamic>{
-        'title': updatedTag.title,
-        'tag': updatedTag.toJson(),
-      };
-    }
-    await editNote(noteId: noteWithUpdatedTagId, newNoteData: newNoteData);
-  }
-
   Future<void> _deletedTagStreamListener(Tag updatedTag) async {
     await _updatedTagStreamListener(updatedTag, shouldDeleteTag: true);
   }
 
+  String _findNoteWithUpdatedTag(Tag updatedTag) {
+    final notes = rawNoteSubject.value.docs
+        .map((rawNote) => Note.fromDatabase(rawNote))
+        .toList();
+    return notes.firstWhere((element) => element.tag?.id == updatedTag.id).id;
+  }
+
+  Map<String, dynamic> _createNewNoteData(
+    Tag updatedTag, {
+    required bool shouldDeleteTag,
+  }) {
+    if (shouldDeleteTag) {
+      return <String, dynamic>{
+        'tag': null,
+      };
+    } else {
+      return <String, dynamic>{
+        'title': updatedTag.title,
+        'tag': updatedTag.toJson(),
+      };
+    }
+  }
+
   void _createAuthorizedSubscription(User user) {
-    _rawNoteStreamSubscription = _noteRepository
+    rawNoteStreamSubscription = _noteRepository
         .createNoteStream(user.uid)
         .listen(_rawNoteStreamListener);
-    _rawTagStreamSubscription =
+    rawTagStreamSubscription =
         _tagListScreenModel.rawTagSubject.listen(_rawTagStreamListener);
-    _updatedTagStreamSubscription = _tagListScreenModel.updatedTagStream.stream
+    updatedTagStreamSubscription = _tagListScreenModel.updatedTagStream.stream
         .listen(_updatedTagStreamListener);
-    _deletedTagStreamSubscription = _tagListScreenModel.deletedTagStream.stream
+    deletedTagStreamSubscription = _tagListScreenModel.deletedTagStream.stream
         .listen(_deletedTagStreamListener);
   }
 
-  void _cancelAuthorizedSubscription() {
-    _rawNoteStreamSubscription?.cancel();
-    _rawTagStreamSubscription?.cancel();
-    _updatedTagStreamSubscription?.cancel();
-    _deletedTagStreamSubscription?.cancel();
+  Future<void> _cancelAuthorizedSubscription() async {
+    await rawNoteStreamSubscription?.cancel();
+    await rawTagStreamSubscription?.cancel();
+    await updatedTagStreamSubscription?.cancel();
+    await deletedTagStreamSubscription?.cancel();
   }
 }

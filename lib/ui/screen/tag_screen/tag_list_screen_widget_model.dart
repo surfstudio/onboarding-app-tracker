@@ -117,11 +117,7 @@ class TagListScreenWidgetModel
   Future<void> _addTag(Tag newTag) async {
     _tagListState.value?.data?.add(newTag);
     _updateState(_tagListState.value?.data);
-    try {
-      await model.addTag(newTag);
-    } on FirebaseException catch (_) {
-      throw Exception('Cannot add new tag');
-    }
+    await model.addTag(newTag);
   }
 
   Future<void> _editTag(Tag tagToEdit, String newTitle) async {
@@ -130,22 +126,14 @@ class TagListScreenWidgetModel
       final editedTag = tagToEdit.copyWith(title: newTitle);
       _tagListState.value?.data?[index] = editedTag;
       _updateState(_tagListState.value?.data);
-      try {
-        await model.updateTag(editedTag);
-      } on FirebaseException catch (_) {
-        throw Exception('Cannot edit tag');
-      }
+      await model.updateTag(editedTag);
     }
   }
 
   Future<void> _deleteTag(Tag tagToDelete) async {
     _tagListState.value?.data?.remove(tagToDelete);
     _updateState(_tagListState.value?.data);
-    try {
-      await model.deleteTag(tagToDelete);
-    } on FirebaseException catch (_) {
-      throw Exception('Cannot delete tag');
-    }
+    await model.deleteTag(tagToDelete);
   }
 
   void _rawTagStreamListener(QuerySnapshot snapshot) {

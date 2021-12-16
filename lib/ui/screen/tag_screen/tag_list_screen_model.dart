@@ -71,16 +71,26 @@ class TagListScreenModel extends ElementaryModel {
   Future<void> deleteTag(Tag tagToDelete) async {
     final user = authChangesSubject.value;
     if (user != null) {
-      _deletedTagStream.add(tagToDelete);
-      await _tagRepository.deleteTag(user.uid, tagToDelete);
+      try {
+        _deletedTagStream.add(tagToDelete);
+        await _tagRepository.deleteTag(user.uid, tagToDelete);
+      } on Exception catch (e) {
+        handleError(e);
+        rethrow;
+      }
     }
   }
 
   Future<void> updateTag(Tag editedTag) async {
     final user = authChangesSubject.value;
     if (user != null) {
-      _updatedTagStream.add(editedTag);
-      await _tagRepository.updateTag(user.uid, editedTag);
+      try {
+        _updatedTagStream.add(editedTag);
+        await _tagRepository.updateTag(user.uid, editedTag);
+      } on Exception catch (e) {
+        handleError(e);
+        rethrow;
+      }
     }
   }
 

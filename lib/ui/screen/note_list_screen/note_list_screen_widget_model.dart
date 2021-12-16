@@ -62,20 +62,14 @@ class NoteListScreenWidgetModel
 
   @override
   Future<void> loadAllNotes() async {
-    final previousState = _noteListState.value?.data;
     _noteListState.loading();
-    try {
-      final rawNotes = await model.loadAllNotes();
-      if (rawNotes != null) {
-        final sortedNotes = rawNotes..sort();
-        _noteListState.content(sortedNotes);
-      }
-    } on Exception catch (e) {
-      _noteListState.error(e, previousState);
+    final rawNotes = await model.loadAllNotes();
+    if (rawNotes != null) {
+      final sortedNotes = rawNotes..sort();
+      _noteListState.content(sortedNotes);
     }
   }
 
-  // ToDo(Bazarova): грязная функция
   @override
   Future<Note?> moveNoteToTrash(int index) async {
     final noteToDelete = _noteListState.value?.data?.elementAt(index);
@@ -142,14 +136,11 @@ class NoteListScreenWidgetModel
         builder: (context) {
           String? title;
           Tag? tag;
-
-          final tags = model.rawTagSubject.value.docs
-              .map((rawTag) => Tag.fromDatabase(rawTag))
-              .toList();
+          final tags = _getTags();
 
           void onSubmit() {
             if (title != null) {
-              tag ??= _returnTagIfTitleInTags(tags, title!);
+              tag ??= _returnTagIfTitleInTags(title!);
               final newNote = Note(
                 startTimestamp: DateTime.now().millisecondsSinceEpoch,
                 id: 'default',
@@ -162,8 +153,7 @@ class NoteListScreenWidgetModel
           }
 
           void onChanged(String inputText) => title = inputText;
-          void onChooseTag(Tag chosenTag) => tag = chosenTag;
-          void onSelectedTag(Tag tag) => onChooseTag(tag);
+          void onSelectedTag(Tag chosenTag) => tag = chosenTag;
 
           return InputDialog(
             inputField: NoteInputField(
@@ -178,7 +168,6 @@ class NoteListScreenWidgetModel
         },
       );
 
-  // ToDo(Bazarova): дублирование с функицей showAddNoteDialog
   @override
   Future<void> showEditNoteDialog(Note noteToEdit) async => showDialog<void>(
         context: context,
@@ -186,13 +175,11 @@ class NoteListScreenWidgetModel
           String? title;
           Tag? tag;
 
-          final tags = model.rawTagSubject.value.docs
-              .map((rawTag) => Tag.fromDatabase(rawTag))
-              .toList();
+          final tags = _getTags();
 
           void onSubmit() {
             if (title != null && title != '' && title != noteToEdit.title) {
-              tag ??= _returnTagIfTitleInTags(tags, title!);
+              tag ??= _returnTagIfTitleInTags(title!);
               final newNoteData = <String, dynamic>{
                 'title': title,
                 'tag': tag?.toJson(),
@@ -203,8 +190,7 @@ class NoteListScreenWidgetModel
           }
 
           void onChanged(String inputText) => title = inputText;
-          void onChooseTag(Tag chosenTag) => tag = chosenTag;
-          void onSelectedTag(Tag tag) => onChooseTag(tag);
+          void onSelectedTag(Tag chosenTag) => tag = chosenTag;
 
           return InputDialog(
             inputField: NoteInputField(
@@ -251,7 +237,6 @@ class NoteListScreenWidgetModel
     }
   }
 
-  // ToDo(Bazarova): грязная функция
   Future<void> _addNoteAndFinishTheLastNote(Note newNote) async {
     await _finishNote(newNote);
     await _addNote(newNote);
@@ -263,13 +248,7 @@ class NoteListScreenWidgetModel
     final newState = (_noteListState.value?.data?..sort()) ?? [];
     _noteListState.content(newState);
 
-    try {
-      await model.addNote(newNote);
-    } on Exception catch (_) {
-      final currentState = (_noteListState.value?.data ?? [newNote])
-        ..remove(newNote);
-      _noteListState.content(currentState);
-    }
+    await model.addNote(newNote);
   }
 
   Future<void> _editNote(
@@ -278,15 +257,18 @@ class NoteListScreenWidgetModel
   ) async {
     final index = _noteListState.value?.data?.indexOf(noteToEdit);
     if (index != null) {
-      try {
-        await model.editNote(noteId: noteToEdit.id, newNoteData: newNoteData);
-      } on FirebaseException catch (_) {
-        throw Exception('Cannot edit note');
-      }
+      await model.editNote(noteId: noteToEdit.id, newNoteData: newNoteData);
     }
   }
 
-  Tag? _returnTagIfTitleInTags(List<Tag> tags, String title) {
+  List<Tag> _getTags() {
+    return model.rawTagSubject.value.docs
+        .map((rawTag) => Tag.fromDatabase(rawTag))
+        .toList();
+  }
+
+  Tag? _returnTagIfTitleInTags(String title) {
+    final tags = _getTags();
     if (tags.firstWhereOrNull((element) => element.title == title) != null) {
       return Tag(
         title: title,
