@@ -62,10 +62,13 @@ class NoteListScreenWidgetModel
   @override
   Future<void> loadAllNotes() async {
     _noteListState.loading();
+    final currentState = _noteListState.value?.data ?? [];
     final rawNotes = await model.loadAllNotes();
     if (rawNotes != null) {
       final sortedNotes = rawNotes..sort();
       _noteListState.content(sortedNotes);
+    } else {
+      _noteListState.content(currentState);
     }
   }
 
