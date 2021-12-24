@@ -1,12 +1,15 @@
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:time_tracker/data/i_auth_repository.dart';
 import 'package:time_tracker/data/i_note_repository.dart';
 import 'package:time_tracker/data/i_tag_repository.dart';
+import 'package:time_tracker/data/remote/auth_repository.dart';
 import 'package:time_tracker/data/remote/note_repository.dart';
 import 'package:time_tracker/data/remote/tag_repository.dart';
 import 'package:time_tracker/ui/app/app.dart';
 import 'package:time_tracker/ui/common/error_handlers/default_error_handler.dart';
+import 'package:time_tracker/ui/screen/auth/auth_screen_model.dart';
 import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen_model.dart';
 import 'package:time_tracker/ui/screen/tag_screen/tag_list_screen_model.dart';
 
@@ -22,8 +25,10 @@ class AppDependencies extends StatefulWidget {
 
 class _AppDependenciesState extends State<AppDependencies> {
   late final DefaultErrorHandler _defaultErrorHandler;
+  late final IAuthRepository _authRepository;
   late final INoteRepository _noteRepository;
   late final ITagRepository _tagRepository;
+  late final AuthScreenModel _authScreenModel;
   late final NoteListScreenModel _noteListScreenModel;
   late final TagListScreenModel _tagListScreenModel;
 
@@ -34,17 +39,25 @@ class _AppDependenciesState extends State<AppDependencies> {
     super.initState();
 
     _defaultErrorHandler = DefaultErrorHandler();
+    _authRepository = AuthRepository();
     _noteRepository = NoteRepository();
     _tagRepository = TagRepository();
 
+    _authScreenModel = AuthScreenModel(
+      _authRepository,
+      _defaultErrorHandler,
+    );
+
     _tagListScreenModel = TagListScreenModel(
       _tagRepository,
+      _authScreenModel,
       _defaultErrorHandler,
     );
 
     _noteListScreenModel = NoteListScreenModel(
       _noteRepository,
       _tagListScreenModel,
+      _authScreenModel,
       _defaultErrorHandler,
     );
 
@@ -55,6 +68,9 @@ class _AppDependenciesState extends State<AppDependencies> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider<AuthScreenModel>(
+          create: (_) => _authScreenModel,
+        ),
         Provider<NoteListScreenModel>(
           create: (_) => _noteListScreenModel,
         ),

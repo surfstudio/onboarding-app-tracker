@@ -26,6 +26,7 @@ class NoteListScreen extends ElementaryWidget<INoteListWidgetModel> {
       drawer: Drawer(
         child: DrawerContent(
           onTapTags: wm.onTapTags,
+          onTapProfile: wm.onTapProfile,
         ),
       ),
       body: EntityStateNotifierBuilder<List<Note>>(

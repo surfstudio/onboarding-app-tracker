@@ -3,9 +3,11 @@ import 'package:time_tracker/ui/res/app_colors.dart';
 
 class DrawerContent extends StatelessWidget {
   final void Function() onTapTags;
+  final void Function() onTapProfile;
 
   const DrawerContent({
     required this.onTapTags,
+    required this.onTapProfile,
     Key? key,
   }) : super(key: key);
 
@@ -18,7 +20,7 @@ class DrawerContent extends StatelessWidget {
         ),
         child: Text(
           'Tracker',
-          style: Theme.of(context).textTheme.subtitle1,
+          style: Theme.of(context).textTheme.headline3,
         ),
       ),
       ListTile(
@@ -27,6 +29,13 @@ class DrawerContent extends StatelessWidget {
           style: Theme.of(context).textTheme.subtitle2,
         ),
         onTap: onTapTags,
+      ),
+      ListTile(
+        title: Text(
+          'Profile',
+          style: Theme.of(context).textTheme.subtitle2,
+        ),
+        onTap: onTapProfile,
       ),
     ];
     return ListView(

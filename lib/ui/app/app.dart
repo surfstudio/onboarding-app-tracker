@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:time_tracker/ui/res/app_colors.dart';
 import 'package:time_tracker/ui/res/app_typography.dart';
-import 'package:time_tracker/ui/screen/note_list_screen/note_list_screen.dart';
+import 'package:time_tracker/ui/screen/auth/auth_screen.dart';
 import 'package:time_tracker/ui/widgets/snackbar/snack_bars.dart';
 
 /// App main widget.
@@ -35,8 +35,10 @@ class App extends StatelessWidget {
           headline1: AppTypography.headline.copyWith(color: AppColors.white),
           headline2:
               AppTypography.subHeadline1.copyWith(color: AppColors.white),
-          subtitle1:
+          headline3:
               AppTypography.subHeadline1.copyWith(color: AppColors.black),
+          subtitle1:
+              AppTypography.subHeadline1.copyWith(color: AppColors.white),
           subtitle2:
               AppTypography.subHeadline2.copyWith(color: AppColors.white),
           bodyText1: AppTypography.body.copyWith(color: AppColors.black),
@@ -44,7 +46,7 @@ class App extends StatelessWidget {
           button: AppTypography.subHeadline2.copyWith(color: AppColors.white),
         ),
       ),
-      home: const NoteListScreen(),
+      home: const AuthScreen(),
     );
   }
 }

@@ -6,30 +6,38 @@ import 'package:time_tracker/domain/tag/tag.dart';
 
 class LocalTagRepository implements ITagRepository {
   @override
-  // TODO: implement tagStream
+  // TODO(Bazarova): implement updatedTagStream
+  StreamController<Tag> get updatedTagStream => throw UnimplementedError();
+
+  @override
+  // TODO(Bazarova): implement deletedTagStream
+  StreamController<Tag> get deletedTagStream => throw UnimplementedError();
+
+  @override
+  // TODO(Bazarova): implement tagStream
   Stream<QuerySnapshot<Object?>> get tagStream => throw UnimplementedError();
 
   @override
-  Future<void> addTag(Tag tag) async {}
+  Future<void> addTag(String userId, Tag tag) async {}
 
   @override
-  Future<void> deleteTag(Tag tagToDelete) async {}
+  Future<void> deleteTag(String userId, Tag tagToDelete) async {}
 
   @override
-  Future<List<Tag>> loadAllTags() async {
+  Future<List<Tag>> loadAllTags(
+    String userId,
+  ) async {
     return [Tag(id: 'default', title: 'My Tag')];
   }
 
   @override
-  Future<void> updateTag(Tag tagToUpdate) async {
+  Future<void> updateTag(String userId, Tag tagToUpdate) async {
     throw UnimplementedError();
   }
 
   @override
-  // TODO: implement updatedTagStream
-  StreamController<Tag> get updatedTagStream => throw UnimplementedError();
-
-  @override
-  // TODO: implement deletedTagStream
-  StreamController<Tag> get deletedTagStream => throw UnimplementedError();
+  Stream<List<Tag>> createTagStream(String userId) {
+    // TODO(Bazarova): implement createTagStream
+    throw UnimplementedError();
+  }
 }

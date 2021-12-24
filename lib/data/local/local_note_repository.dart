@@ -17,46 +17,40 @@ class TempLocalNoteRepository implements INoteRepository {
   }
 
   @override
-  Future<List<Note>> loadAllNotes() async {
+  Future<List<Note>> loadAllNotes(String userId) async {
     await _networkImitation.addDuration();
     return _noteList..sort(_sortByStartDateTimeCallback);
   }
 
   @override
-  Future<void> addNote(Note newNote) async {
+  Future<void> addNote(String userId, Note newNote) async {
     await _networkImitation.addDuration();
     _networkImitation.addException(howOften: 3);
     _noteList.add(newNote);
   }
 
   @override
-  Future<void> deleteNote(Note note) async {}
+  Future<void> deleteNote(String userId, Note note) async {}
 
   @override
   Future<List<Note>> editNote({
-    required String noteId,
-    required Map<String, dynamic> newNoteData,
+    required String userId,
+    required Note updatedNote,
   }) async {
     await _networkImitation.addDuration();
-    _checkElementInList(noteId);
-    // _noteList[_getIndexById(noteId)] = newNoteData;
     return _noteList;
   }
 
   @override
-  Future<void> finishNote(int endTimestamp) {
+  Future<void> finishNote(String userId, int endTimestamp) {
     // TODO(Bazarova): implement finishNote
     throw UnimplementedError();
   }
 
-  // int _getIndexById(String noteId) {
-  //   return _noteList.indexWhere((note) => note.id == noteId);
-  // }
-
-  void _checkElementInList(String noteId) {
-    if (!_noteList.any((note) => note.id == noteId)) {
-      throw Exception('Element not found');
-    }
+  @override
+  Stream<List<Note>> createNoteStream(String userId) {
+    // TODO(Bazarova): implement createNoteStream
+    throw UnimplementedError();
   }
 
   int _sortByStartDateTimeCallback(Note a, Note b) {
